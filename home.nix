@@ -15,7 +15,9 @@
     ./sway
     ./nvim
     ./zsh
+    ./kitty
     ./alacritty
+    ./foot
   ];
 
 
@@ -37,8 +39,12 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = [
+    pkgs.foot
+    pkgs.direnv
+    pkgs.ripgrep
     pkgs.bottom
     pkgs.nerd-fonts.jetbrains-mono
+    pkgs.font-awesome
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the

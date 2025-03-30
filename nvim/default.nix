@@ -14,12 +14,25 @@ in
       plenary-nvim
       nvim-treesitter.withAllGrammars
       nightfox-nvim
+
+      # LSP
       mason-nvim
+      mason-lspconfig-nvim
+      nvim-lspconfig
+
+      # Autocompletion
+      nvim-cmp
+      cmp-nvim-lsp
+      cmp-buffer
+      cmp-path
+      cmp-path
+
       telescope-nvim
       telescope-fzf-native-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
+      -- Basic settings
       vim.opt.cursorline = true
       vim.opt.cursorlineopt = "number"
       vim.opt.tabstop = 2
@@ -30,11 +43,71 @@ in
       vim.opt.nu = true
       vim.opt.scrolloff = 8
       vim.opt.smarttab = true
-
       vim.o.termguicolors = true
+
+      -- Easy buffer navigation
+      vim.keymap.set('n', '<C-h>', '<C-w>h', {noremap=true})
+      vim.keymap.set('n', '<C-j>', '<C-w>j', {noremap=true})
+      vim.keymap.set('n', '<C-k>', '<C-w>k', {noremap=false})
+      vim.keymap.set('n', '<C-l>', '<C-w>l', {noremap=true})
+
       vim.cmd('colorscheme nightfox')
 
-      require("mason").setup()
+      -- Persistent undo
+      vim.api.nvim_exec([[
+        if has('persistent_undo')
+          set undofile
+          set undodir=$HOME/.vim/undo
+          endif
+      ]], false)
+
+      require('mason').setup({
+        PATH = "append",
+      })
+      require("mason-lspconfig").setup()
+
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      local lspconfig = require('lspconfig')
+      lspconfig.rust_analyzer.setup {
+        capabilities = capabilities,
+        -- Server-specific settings. See `:help lspconfig-setup`
+        settings = {
+          ['rust-analyzer'] = {},
+        },
+      }
+
+      -- nvim-cmp setup
+      local cmp = require 'cmp'
+      cmp.setup {
+        mapping = cmp.mapping.preset.insert({
+          ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- Up
+          ['<C-d>'] = cmp.mapping.scroll_docs(4), -- Down
+          -- C-b (back) C-f (forward) for snippet placeholder navigation.
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<CR>'] = cmp.mapping.confirm {
+            behavior = cmp.ConfirmBehavior.Replace,
+            select = true,
+          },
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+        }),
+        sources = {
+          { name = 'nvim_lsp' },
+          { name = 'path' },
+        },
+      }
 
       require('telescope').load_extension('fzf')
 	    local telescope = require('telescope.builtin')
