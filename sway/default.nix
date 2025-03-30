@@ -33,6 +33,7 @@ in {
       }
 
       bindsym ${cfg.config.modifier}+o exec "rofi -modi drun,run -show drun"
+      bindsym ${cfg.config.modifier}+BackSpace exec --no-startup-id swaylock -c 333344
     '';
   };
   services.gnome-keyring.enable = true;

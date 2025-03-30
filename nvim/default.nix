@@ -60,7 +60,7 @@ in
 
       require("gitlinker").setup()
 
-      vim.cmd('colorscheme nightfox')
+      vim.cmd('colorscheme nordfox')
 
       -- floating errors
       vim.diagnostic.config({

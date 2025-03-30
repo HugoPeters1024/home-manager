@@ -6,7 +6,7 @@ install the following packages, which won't work well through nix, we'll still c
 them using home manager though.
 
 ```
-sudo apt install sway, fonts-font-awesome, pavucontrol, wdisplays
+sudo apt install sway, swaylock, fonts-font-awesome, pavucontrol, wdisplays
 ```
 
 create /etc/nix/configuration:
