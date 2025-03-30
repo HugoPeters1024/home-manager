@@ -14,12 +14,14 @@ in
       plenary-nvim
       nvim-treesitter.withAllGrammars
       nightfox-nvim
+      nvim-web-devicons
 
       # LSP
       mason-nvim
       mason-lspconfig-nvim
       nvim-lspconfig
       fidget-nvim
+      trouble-nvim
 
       # Autocompletion
       nvim-cmp
@@ -31,6 +33,8 @@ in
       whitespace-nvim
       telescope-nvim
       telescope-fzf-native-nvim
+      emmet-vim
+      gitlinker-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
@@ -46,6 +50,7 @@ in
       vim.opt.scrolloff = 8
       vim.opt.smarttab = true
       vim.o.termguicolors = true
+      vim.g.gitblame_enabled = 0
 
       -- Easy buffer navigation
       vim.keymap.set('n', '<C-h>', '<C-w>h', {noremap=true})
@@ -53,7 +58,21 @@ in
       vim.keymap.set('n', '<C-k>', '<C-w>k', {noremap=false})
       vim.keymap.set('n', '<C-l>', '<C-w>l', {noremap=true})
 
+      require("gitlinker").setup()
+
       vim.cmd('colorscheme nightfox')
+
+      -- floating errors
+      vim.diagnostic.config({
+        virtual_text = {
+          -- source = "always",  -- Or "if_many"
+          prefix = '●', -- Could be '■', '▎', 'x'
+        },
+        severity_sort = true,
+        float = {
+          source = "always",  -- Or "if_many"
+        },
+      })
 
       -- autoremove whitespace on save
       local whitespace_nvim = require('whitespace-nvim')
@@ -91,8 +110,13 @@ in
           ['rust-analyzer'] = {},
         },
       }
-      -- lsp loading status
       require("fidget").setup{}
+      require("trouble").setup{}
+
+      local bufopts = { noremap=true, silent=true }
+      vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
+      vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
+
 
       -- nvim-cmp setup
       local cmp = require 'cmp'
@@ -124,6 +148,7 @@ in
         sources = {
           { name = 'nvim_lsp' },
           { name = 'path' },
+          { name = 'buffer' },
         },
       }
 

@@ -7,7 +7,7 @@ in {
     wrapperFeatures.gtk = true; # Fixes common issues with GTK 3 apps
     config = rec {
       modifier = "Mod4";
-      terminal = "/usr/bin/foot ${pkgs.zsh}/bin/zsh"; 
+      terminal = "${pkgs.foot}/bin/foot ${pkgs.zsh}/bin/zsh";
       startup = [ ];
       bars = [{ command = "${pkgs.waybar}/bin/waybar"; }];
       input = {
@@ -24,7 +24,7 @@ in {
       for_window [class=.*] exec ~/.config/i3/i3-autosplit.sh
       hide_edge_borders smart
 
-      bindsym ${cfg.config.modifier}+o exec "rofi -modi drun,run -show drun" 
+      bindsym ${cfg.config.modifier}+o exec "rofi -modi drun,run -show drun"
     '';
   };
   services.gnome-keyring.enable = true;
