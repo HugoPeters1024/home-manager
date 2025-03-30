@@ -5,6 +5,9 @@ first follow the basic home manager instructions, which including adding its nix
 install the following packages, which won't work well through nix, we'll still configure
 them using home manager though.
 
+Currently works with sway version 1.9.
+Newer versions don't seem to work at the moment :/
+
 ```
 sudo apt install sway, swaylock, fonts-font-awesome, pavucontrol, wdisplays
 ```

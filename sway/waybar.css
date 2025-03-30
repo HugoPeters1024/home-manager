@@ -103,18 +103,18 @@ window#waybar.chromium {
 }
 
 #clock {
-    background-color: #000000;
+    background-color: #2e3440;
     color: white;
 }
 
 #battery {
-    background-color: #000000;
+    background-color: #2e3440;
     color: white;
 }
 
 #battery.charging {
     color: #ffffff;
-    background-color: #000000;
+    background-color: #2e3440;
 }
 
 @keyframes blink {
@@ -139,22 +139,22 @@ label:focus {
 }
 
 #cpu {
-    background-color: #000000;
+    background-color: #2e3440;
     color: #ffffff;
 }
 
 #memory {
-    background-color: #000000;
+    background-color: #2e3440;
     color: white;
 }
 
 #backlight {
-    background-color: #000000;
+    background-color: #2e3440;
     color:white;
 }
 
 #network {
-    background-color: #000000;
+    background-color: #2e3440;
     color:white;
 
 }
@@ -164,12 +164,12 @@ label:focus {
 }
 
 #pulseaudio {
-    background-color: #000000;
+    background-color: #2e3440;
     color: #ffffff;
 }
 
 #pulseaudio.muted {
-    background-color: #000000;
+    background-color: #2e3440;
     color: #ffffff;
 }
 

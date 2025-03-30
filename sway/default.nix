@@ -34,6 +34,19 @@ in {
 
       bindsym ${cfg.config.modifier}+o exec "rofi -modi drun,run -show drun"
       bindsym ${cfg.config.modifier}+BackSpace exec --no-startup-id swaylock -c 333344
+
+      # Brightness
+      bindsym XF86MonBrightnessDown exec ${pkgs.brightnessctl}/bin/brightnessctl s 5-
+      bindsym XF86MonBrightnessUp exec ${pkgs.brightnessctl}/bin/brightnessctl s +5
+
+      # Volume
+      bindsym XF86AudioRaiseVolume exec amixer set Master 5%+
+      bindsym XF86AudioLowerVolume exec amixer set Master 5%-
+      bindsym XF86AudioMute exec amixer -D pulse set Master 1+ toggle
+      bindsym XF86AudioMicMute exec amixer set Capture toggle
+
+      # Screenshot
+      bindsym Print exec ${pkgs.sway-contrib.grimshot}/bin/grim -g "$(slurp)" - | wl-copy
     '';
   };
   services.gnome-keyring.enable = true;
@@ -60,21 +73,21 @@ in {
 
         "modules-right" = [
           "mpd"
-          "idle_inhibitor"
+          # "idle_inhibitor"
           "pulseaudio"
           "network"
-          "power-profiles-daemon"
+          # "power-profiles-daemon"
           "cpu"
           "memory"
           "temperature"
           "backlight"
           "keyboard-state"
-          "sway/language"
+          # "sway/language"
           "battery"
           "battery#bat2"
           "clock"
           "tray"
-          "custom/power"
+          # "custom/power"
         ];
 
         "keyboard-state" = {

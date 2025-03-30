@@ -41,10 +41,12 @@
     pkgs.direnv
     pkgs.ripgrep
     pkgs.bottom
+    pkgs.brightnessctl
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.font-awesome
     pkgs.xdg-desktop-portal-wlr
     pkgs.xdg-desktop-portal
+    pkgs.asciiquarium
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
