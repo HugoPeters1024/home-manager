@@ -19,6 +19,7 @@ in
       mason-nvim
       mason-lspconfig-nvim
       nvim-lspconfig
+      fidget-nvim
 
       # Autocompletion
       nvim-cmp
@@ -27,6 +28,7 @@ in
       cmp-path
       cmp-path
 
+      whitespace-nvim
       telescope-nvim
       telescope-fzf-native-nvim
     ];
@@ -53,6 +55,20 @@ in
 
       vim.cmd('colorscheme nightfox')
 
+      -- autoremove whitespace on save
+      local whitespace_nvim = require('whitespace-nvim')
+      whitespace_nvim.setup({
+        highlight = 'DiffDelete',
+        ignored_filetypes = { 'TelescopePrompt', 'Trouble', 'help' },
+      })
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        pattern = '*',
+        callback = function()
+          whitespace_nvim.trim()
+        end,
+      })
+
+
       -- Persistent undo
       vim.api.nvim_exec([[
         if has('persistent_undo')
@@ -75,6 +91,8 @@ in
           ['rust-analyzer'] = {},
         },
       }
+      -- lsp loading status
+      require("fidget").setup{}
 
       -- nvim-cmp setup
       local cmp = require 'cmp'
