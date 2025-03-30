@@ -43,6 +43,8 @@
     pkgs.bottom
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.font-awesome
+    pkgs.xdg-desktop-portal-wlr
+    pkgs.xdg-desktop-portal
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the

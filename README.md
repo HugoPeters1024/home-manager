@@ -6,7 +6,7 @@ install the following packages, which won't work well through nix, we'll still c
 them using home manager though.
 
 ```
-sudo apt install sway, fonts-font-awesome
+sudo apt install sway, fonts-font-awesome, pavucontrol
 ```
 
 create /etc/nix/configuration:
@@ -43,4 +43,4 @@ export MOZ_ENABLED_WAYLAND=1
 exec sway --unsupported-gpu -V
 ```
 
-to be called from /usr/share/wayland-sessions/sway.desktop  
+to be called from /usr/share/wayland-sessions/sway.desktop
