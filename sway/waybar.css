@@ -81,7 +81,8 @@ window#waybar.chromium {
 #tray,
 #mode,
 #idle_inhibitor,
-#mpd {
+#mpd
+#disk {
     padding: 0 10px;
     margin: 6px 3px;
     color: #000000;
@@ -144,6 +145,11 @@ label:focus {
 }
 
 #memory {
+    background-color: #2e3440;
+    color: white;
+}
+
+#disk {
     background-color: #2e3440;
     color: white;
 }

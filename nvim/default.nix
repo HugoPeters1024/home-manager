@@ -116,6 +116,12 @@ in
       local bufopts = { noremap=true, silent=true }
       vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
       vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
+      vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, bufopts)
+      vim.keymap.set('n', 'go', vim.lsp.buf.definition, bufopts)
+      vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
+      vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
+      vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
 
 
       -- nvim-cmp setup

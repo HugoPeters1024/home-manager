@@ -79,6 +79,7 @@ in {
           # "power-profiles-daemon"
           "cpu"
           "memory"
+          "disk"
           "temperature"
           "backlight"
           "keyboard-state"
@@ -163,6 +164,12 @@ in {
 
         "memory" = {
           "format" = "{}% ";
+        };
+
+        "disk" = {
+          "interval" = 30;
+          "format" = "{used}/{total}";
+          "path" = "/";
         };
 
         "temperature" = {
