@@ -35,10 +35,13 @@ in
       telescope-fzf-native-nvim
       emmet-vim
       gitlinker-nvim
+      toggleterm-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
+      -- --------------
       -- Basic settings
+      -- --------------
       vim.opt.cursorline = true
       vim.opt.cursorlineopt = "number"
       vim.opt.tabstop = 2
@@ -51,18 +54,45 @@ in
       vim.opt.smarttab = true
       vim.o.termguicolors = true
       vim.g.gitblame_enabled = 0
+      vim.cmd('colorscheme nordfox')
 
+      -- ----------------------
       -- Easy buffer navigation
+      -- ----------------------
       vim.keymap.set('n', '<C-h>', '<C-w>h', {noremap=true})
       vim.keymap.set('n', '<C-j>', '<C-w>j', {noremap=true})
       vim.keymap.set('n', '<C-k>', '<C-w>k', {noremap=false})
       vim.keymap.set('n', '<C-l>', '<C-w>l', {noremap=true})
 
-      require("gitlinker").setup()
+      local bufopts = { noremap=true, silent=true }
 
-      vim.cmd('colorscheme nordfox')
+      -- --------------
+      -- Simple plugins
+      -- --------------
+      require("gitlinker").setup()       -- GBrowse & friend
 
+      -- --------
+      -- Terminal
+      -- --------
+      require("toggleterm").setup()
+      function _G.set_terminal_keymaps()
+        local opts = {buffer = 0}
+        vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+        vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+        vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+        vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+        vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+        vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+      end
+      -- if you only want these mappings for toggle term use term://*toggleterm#* instead
+      vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+      vim.keymap.set('n', '`', ':ToggleTerm direction=horizontal<CR>', bufopts)
+      vim.keymap.set('n', '~', ':ToggleTerm direction=float<CR>', bufopts)
+
+
+      -- ---------------
       -- floating errors
+      -- ---------------
       vim.diagnostic.config({
         virtual_text = {
           -- source = "always",  -- Or "if_many"
@@ -74,7 +104,9 @@ in
         },
       })
 
+      -- -----------------------------
       -- autoremove whitespace on save
+      -- ----------------------------
       local whitespace_nvim = require('whitespace-nvim')
       whitespace_nvim.setup({
         highlight = 'DiffDelete',
@@ -88,7 +120,9 @@ in
       })
 
 
+      -- ---------------
       -- Persistent undo
+      -- ---------------
       vim.api.nvim_exec([[
         if has('persistent_undo')
           set undofile
@@ -96,6 +130,9 @@ in
           endif
       ]], false)
 
+      -- ----------------
+      -- LSP
+      -- ----------------
       require('mason').setup({
         PATH = "append",
       })
@@ -113,7 +150,6 @@ in
       require("fidget").setup{}
       require("trouble").setup{}
 
-      local bufopts = { noremap=true, silent=true }
       vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
       vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
       vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, bufopts)
@@ -123,8 +159,9 @@ in
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
       vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
 
-
-      -- nvim-cmp setup
+      -- ------------------
+      -- LSP Autocompletion
+      -- ------------------
       local cmp = require 'cmp'
       cmp.setup {
         mapping = cmp.mapping.preset.insert({
@@ -158,6 +195,9 @@ in
         },
       }
 
+      -- ---------
+      -- Telescope
+      -- ---------
       require('telescope').load_extension('fzf')
 	    local telescope = require('telescope.builtin')
 	    vim.keymap.set('n', 'ff', telescope.find_files, {})
