@@ -2,6 +2,25 @@
 let
   cfg = config.wayland.windowManager.sway;
 in {
+  # Set up the right set of files, according to:
+  # https://github.com/alebastr/sway-systemd/tree/main
+  # Make sure to bring in updates from there periodically!
+  home.file.".config/systemd/user/sway-session-shutdown.target".source =
+    ./systemd-units/sway-session-shutdown.target;
+
+  # home.file.".config/systemd/user/sway-session.target".source =
+  #   ./systemd-units/sway-session.target;
+
+  home.file.".config/systemd/user/sway-xdg-autostart.target".source =
+    ./systemd-units/sway-xdg-autostart.target;
+
+  # Also copy the session.sh from the same repo into our config directory,
+  # so it can be called from our sway startup.
+  home.file.".config/sway/session.sh" = {
+    source = ./session.sh;
+    executable = true;
+  };
+
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true; # Fixes common issues with GTK 3 apps
@@ -19,6 +38,13 @@ in {
     };
 
     extraConfig = ''
+      # Execute the session command that does all sorts of magic, including
+      # ensuring we can screen-share.
+      exec ${config.home.homeDirectory}/.config/sway/session.sh
+
+      ## include the default sway config
+      include /etc/sway/config.d/*
+
       for_window [class="^.*"] border pixel 4
       for_window [floating] border pixel 5
       for_window [class=.*] exec ~/.config/i3/i3-autosplit.sh
