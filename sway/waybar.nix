@@ -31,6 +31,7 @@
           "memory"
           "disk"
           "temperature"
+          "custom/gpu-temperature"
           "backlight"
           "keyboard-state"
           # "sway/language"
@@ -110,10 +111,14 @@
         "cpu" = {
           "format" = "{usage}% ";
           "tooltip" = false;
+          "interval" = 2;
+          "on-click-right" = "${pkgs.foot}/bin/foot --app-id=float_me_pls ${pkgs.bottom}/bin/btm";
         };
 
         "memory" = {
-          "format" = "{}% ";
+         # "format" = "{}% ";
+          "format" = "{used:0.1f}G/{total:0.1f}G ";
+          "interval" = 2;
         };
 
         "disk" = {
@@ -124,8 +129,16 @@
 
         "temperature" = {
           "critical-threshold" = 80;
-          "format" = "{temperatureC}°C {icon}";
+          # "format" = "CPU: {temperatureC}°C {icon}";
+          "format" = "CPU: {temperatureC}°C";
           "format-icons" = ["" "" ""];
+        };
+
+        "custom/gpu-temperature" = {
+          "exec" = "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits";
+          "format" = "GPU: {}°C";
+          "return-type" = "string";
+          "interval" = 5;
         };
 
         "backlight" = {
@@ -144,10 +157,12 @@
           "format-plugged" = "{capacity}% ";
           "format-alt" = "{time} {icon}";
           "format-icons" = ["" "" "" "" ""];
+          "interval" = 2;
         };
 
         "battery#bat2" = {
           "bat" = "BAT2";
+          "interval" = 2;
         };
 
         "power-profiles-daemon" = {
@@ -169,6 +184,7 @@
           "format-linked" = "{ifname} (No IP) ";
           "format-disconnected" = "Disconnected ⚠";
           "format-alt" = "{ifname}: {ipaddr}/{cidr}";
+          "on-click-right" = "nm-connection-editor";
         };
 
         "pulseaudio" = {
