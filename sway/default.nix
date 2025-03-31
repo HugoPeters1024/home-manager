@@ -1,7 +1,12 @@
 { config, pkgs, ... }:
 let
   cfg = config.wayland.windowManager.sway;
+  autotiling-script = import ./autotiling.nix;
 in {
+  imports = [
+    ./autotiling.nix
+  ];
+
   # Set up the right set of files, according to:
   # https://github.com/alebastr/sway-systemd/tree/main
   # Make sure to bring in updates from there periodically!
@@ -20,6 +25,12 @@ in {
     source = ./session.sh;
     executable = true;
   };
+
+  # Autotiling utilities
+  # home.file.".config/sway/autotiling" = {
+  #   source = autotiling-script{};
+  #   executable = true;
+  # };
 
   wayland.windowManager.sway = {
     enable = true;
@@ -44,6 +55,9 @@ in {
 
       ## include the default sway config
       include /etc/sway/config.d/*
+
+      # autotiling utilities
+      exec_always ${config.home.homeDirectory}/.config/sway/autotiling
 
       for_window [class="^.*"] border pixel 4
       for_window [floating] border pixel 5
@@ -73,6 +87,8 @@ in {
 
       # Screenshot
       bindsym Print exec ${pkgs.sway-contrib.grimshot}/bin/grim -g "$(slurp)" - | wl-copy
+
+      workspace 1
     '';
   };
   services.gnome-keyring.enable = true;
