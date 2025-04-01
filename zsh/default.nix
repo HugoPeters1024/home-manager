@@ -16,6 +16,9 @@
     envExtra = ''
        # use whatever installed by rustup
        export PATH="/home/hugo/.cargo/bin:$PATH"
+
+       # use direnv
+       eval "$(direnv hook zsh)"
     '';
   };
 }

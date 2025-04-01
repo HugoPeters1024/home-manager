@@ -147,6 +147,26 @@ in
           ['rust-analyzer'] = {},
         },
       }
+
+      lspconfig.hls.setup {
+        capabilities = capabilities,
+        -- Server-specific settings. See `:help lspconfig-setup`
+        settings = {
+          ['hls'] = {
+            manageHLS = "PATH"
+          },
+        },
+      }
+
+      lspconfig.pyright.setup {
+        capabilities = capabilities,
+        -- Server-specific settings. See `:help lspconfig-setup`
+        settings = {
+          ['pyright'] = {
+          },
+        },
+      }
+
       require("fidget").setup{}
       require("trouble").setup{}
 

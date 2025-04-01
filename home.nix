@@ -6,17 +6,15 @@
   };
   # Requires adding the nixgl channel:
   # nix-channel --add https://github.com/nix-community/nixGL/archive/main.tar.gz nixgl && nix-channel --update
-  nixGL.packages = import <nixgl> { inherit pkgs; };
-  nixGL.defaultWrapper = "mesa";
-  nixGL.offloadWrapper = "nvidiaPrime";
-  nixGL.installScripts = [ "mesa" "nvidiaPrime" ];
+  # nixGL.packages = import <nixgl> { inherit pkgs; };
+  # nixGL.defaultWrapper = "mesa";
+  # nixGL.offloadWrapper = "nvidiaPrime";
+  # nixGL.installScripts = [ "mesa" "nvidiaPrime" ];
 
   imports = [
     ./sway
     ./nvim
     ./zsh
-    ./kitty
-    ./alacritty
     ./foot
   ];
 

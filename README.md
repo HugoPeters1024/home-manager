@@ -30,6 +30,13 @@ enable the config by running
 home-manager switch
 ```
 
+### I'm trying flakes
+
+maybe this works? (replace hostname)
+
+```
+home-manager switch --flake '.#hugo@<hostname>'
+
 
 ### Nuggets:
 
