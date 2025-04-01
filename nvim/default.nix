@@ -93,7 +93,7 @@ in
 
 
       -- ---------------
-      -- floating errors
+      -- Floating errors
       -- ---------------
       vim.diagnostic.config({
         virtual_text = {

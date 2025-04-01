@@ -93,6 +93,7 @@ in {
       for_window [app_id="float_me_pls"] floating enable; move position center; resize set width 50 ppt height 50 ppt
       for_window [app_id="nm-connection-editor"] floating enable
       for_window [app_id="wdisplays"] floating enable
+      for_window [app_id="pavucontrol"] floating enable
 
       workspace 1
     '';
