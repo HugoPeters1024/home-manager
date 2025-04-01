@@ -2,9 +2,12 @@
 
 {
   programs.foot = {
+    enable = true;
     settings = {
-      font = "JetBrains Mono Nerd Font:size=16";
-      shelll = "${pkgs.zsh}/bin/zsh";
+      main = {
+        font = "JetBrains Mono Nerd Font:size=16";
+        shell = "${pkgs.zsh}/bin/zsh";
+      };
     };
   };
 }

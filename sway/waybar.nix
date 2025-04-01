@@ -24,7 +24,6 @@
         "modules-right" = [
           "mpd"
           # "idle_inhibitor"
-          "pulseaudio"
           "network"
           # "power-profiles-daemon"
           "cpu"
@@ -33,6 +32,7 @@
           "temperature"
           "custom/gpu-temperature"
           "backlight"
+          "pulseaudio"
           "keyboard-state"
           # "sway/language"
           "battery"

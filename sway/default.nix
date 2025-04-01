@@ -90,8 +90,9 @@ in {
       bindsym Print exec ${pkgs.sway-contrib.grimshot}/bin/grim -g "$(slurp)" - | wl-copy
 
       # Floating windows
-      for_window [app_id="float_me_pls"] floating enable; resize set width 50 ppt height 50 ppt
+      for_window [app_id="float_me_pls"] floating enable; move position center; resize set width 50 ppt height 50 ppt
       for_window [app_id="nm-connection-editor"] floating enable
+      for_window [app_id="wdisplays"] floating enable
 
       workspace 1
     '';
