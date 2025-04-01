@@ -52,8 +52,10 @@ in
       vim.opt.nu = true
       vim.opt.scrolloff = 8
       vim.opt.smarttab = true
+      vim.opt.signcolumn = "yes"
       vim.o.termguicolors = true
       vim.g.gitblame_enabled = 0
+
       vim.cmd('colorscheme nordfox')
 
       -- ----------------------
@@ -130,6 +132,17 @@ in
           endif
       ]], false)
 
+      -- ---------
+      -- Telescope
+      -- ---------
+      require('telescope').load_extension('fzf')
+	    local telescope = require('telescope.builtin')
+	    vim.keymap.set('n', 'ff', telescope.find_files, {})
+	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
+	    vim.keymap.set('n', 'fe', telescope.diagnostics, {})
+	    vim.keymap.set('n', 'fd', telescope.commands, {})
+      vim.keymap.set('n', 'fh', telescope.current_buffer_fuzzy_find, {})
+
       -- ----------------
       -- LSP
       -- ----------------
@@ -169,12 +182,13 @@ in
 
       require("fidget").setup{}
       require("trouble").setup{}
+      require('nvim-treesitter.configs').setup { highlight = { enable = true }, ... }
 
       vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
       vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
-      vim.keymap.set('n', 'gd', vim.lsp.buf.declaration, bufopts)
-      vim.keymap.set('n', 'go', vim.lsp.buf.definition, bufopts)
-      vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+      vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, bufopts)
+      vim.keymap.set('n', 'gr', telescope.lsp_references, bufopts)
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
       vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
@@ -214,16 +228,6 @@ in
           { name = 'buffer' },
         },
       }
-
-      -- ---------
-      -- Telescope
-      -- ---------
-      require('telescope').load_extension('fzf')
-	    local telescope = require('telescope.builtin')
-	    vim.keymap.set('n', 'ff', telescope.find_files, {})
-	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
-	    vim.keymap.set('n', 'fe', telescope.diagnostics, {})
-	    vim.keymap.set('n', 'fd', telescope.commands, {})
     '';
   };
 }

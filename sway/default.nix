@@ -87,7 +87,7 @@ in {
       bindsym XF86AudioMicMute exec amixer set Capture toggle
 
       # Screenshot
-      bindsym Print exec ${pkgs.sway-contrib.grimshot}/bin/grim -g "$(slurp)" - | wl-copy
+      bindsym Print exec ${pkgs.sway-contrib.grimshot}/bin/grim -g "$(slurp)"
 
       # Floating windows
       for_window [app_id="float_me_pls"] floating enable; move position center; resize set width 50 ppt height 50 ppt
