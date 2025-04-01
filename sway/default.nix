@@ -65,13 +65,13 @@ in {
       for_window [class=.*] exec ~/.config/i3/i3-autosplit.sh
       hide_edge_borders smart
 
-      # bar {
-      #   swaybar_command ${pkgs.waybar}/bin/waybar
-      #   position bottom
-      #   hidden_state hide
-      #   mode hide
-      #   modifier ${cfg.config.modifier}
-      # }
+      bar {
+        swaybar_command ${pkgs.waybar}/bin/waybar
+        position bottom
+        hidden_state hide
+        mode hide
+        modifier ${cfg.config.modifier}
+      }
 
       bindsym ${cfg.config.modifier}+o exec "rofi -modi drun,run -show drun"
       bindsym ${cfg.config.modifier}+BackSpace exec --no-startup-id swaylock -c 333344
