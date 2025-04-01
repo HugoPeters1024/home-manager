@@ -18,7 +18,7 @@
        export PATH="/home/hugo/.cargo/bin:$PATH"
 
        # use direnv
-       eval "$(direnv hook zsh)"
+       eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
     '';
   };
 }

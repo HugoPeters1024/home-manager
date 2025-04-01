@@ -41,22 +41,18 @@
         # Add other configurations if needed
         config = { allowUnfree = true; }; # Example
       };
+    in
+    {
+      homeConfigurations = {
+        "hugo@dev-lt-82" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [ ./home.nix ];
+        };
 
-    in {
-      # Define the Home Manager configuration output
-      homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-
-        # List your Home Manager modules here
-        # The primary one is usually home.nix
-        modules = [
-          ./home.nix
-          # Add paths to other custom modules if you have them:
-          # ./modules/my-custom-settings.nix
-        ];
-
-        # Optionally pass extra arguments to your modules
-        # extraSpecialArgs = { inherit inputs; }; # If modules need access to flake inputs
+        "hugo@legion" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [ ./home.nix ];
+        };
       };
 
       # You could add other outputs here like packages, apps, etc.
