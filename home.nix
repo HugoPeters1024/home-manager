@@ -44,6 +44,7 @@
     pkgs.font-awesome
     pkgs.xdg-desktop-portal-wlr
     pkgs.xdg-desktop-portal
+    pkgs.wlr-randr
     pkgs.asciiquarium
 
     # # It is sometimes useful to fine-tune packages, for example, by applying

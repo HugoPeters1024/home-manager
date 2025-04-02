@@ -50,6 +50,9 @@ in {
     };
 
     extraConfig = ''
+      # Set the refresh rate and orientation
+      exec ${pkgs.wlr-randr}/bin/wlr-randr --output eDP-1 --mode 2560x1600@165.018997 --left-of HDMI-A-1
+
       # Execute the session command that does all sorts of magic, including
       # ensuring we can screen-share.
       exec ${config.home.homeDirectory}/.config/sway/session.sh
