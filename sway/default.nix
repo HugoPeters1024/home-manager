@@ -50,9 +50,6 @@ in {
     };
 
     extraConfig = ''
-      # Set the refresh rate and orientation
-      exec ${pkgs.wlr-randr}/bin/wlr-randr --output eDP-1 --mode 2560x1600@165.018997 --left-of HDMI-A-1
-
       # Execute the session command that does all sorts of magic, including
       # ensuring we can screen-share.
       exec ${config.home.homeDirectory}/.config/sway/session.sh
@@ -62,6 +59,10 @@ in {
 
       # autotiling utilities
       exec_always ${config.home.homeDirectory}/.config/sway/autotiling
+
+      # Set the refresh rate and orientation
+      exec ${pkgs.wlr-randr}/bin/wlr-randr --output eDP-1 --mode 2560x1600@165.018997 --pos 0,560
+      exec ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 2560,0
 
       for_window [class="^.*"] border pixel 4
       for_window [floating] border pixel 5
