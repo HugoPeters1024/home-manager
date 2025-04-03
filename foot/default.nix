@@ -9,7 +9,7 @@
         shell = "${pkgs.zsh}/bin/zsh";
       };
       url = {
-        launch = "xdg-open %u";
+        launch = ''${pkgs.xdg-utils}/bin/xdg-open %u'';
       };
     };
   };

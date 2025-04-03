@@ -58,6 +58,19 @@ in
 
       vim.cmd('colorscheme nordfox')
 
+      -- Use gj/gk for j/k when no count is provided (visual line movement)
+      -- Otherwise, use regular j/k (logical line movement)
+
+      -- Mapping for 'j'
+      vim.keymap.set({'n', 'v', 'o'}, 'j', function()
+        if vim.v.count == 0 then return 'gj' else return 'j' end
+      end, { expr = true, silent = true, noremap = true, desc = "Move down visual line (gj) if no count" })
+
+      -- Mapping for 'k'
+      vim.keymap.set({'n', 'v', 'o'}, 'k', function()
+        if vim.v.count == 0 then return 'gk' else return 'k' end
+      end, { expr = true, silent = true, noremap = true, desc = "Move up visual line (gk) if no count" })
+
       -- ----------------------
       -- Easy buffer navigation
       -- ----------------------
@@ -189,6 +202,7 @@ in
       vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
       vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, bufopts)
       vim.keymap.set('n', 'gr', telescope.lsp_references, bufopts)
+      vim.keymap.set('n', 'gr', function() telescope.lsp_references({ initial_mode = 'normal'}) end, bufopts)
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
       vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
