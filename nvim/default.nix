@@ -213,12 +213,6 @@ in
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
       vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
 
-      vim.lsp.configure({
-          float = {
-              border = "rounded" -- Set the border for LSP floating windows globally
-          }
-      })
-
       -- ------------------
       -- LSP Autocompletion
       -- ------------------
