@@ -84,7 +84,7 @@ in
       -- --------------
       -- Simple plugins
       -- --------------
-      require("gitlinker").setup()       -- GBrowse & friend
+      require("gitlinker").setup()       -- GBrowse & friends
 
       -- --------
       -- Terminal
@@ -138,12 +138,18 @@ in
       -- ---------------
       -- Persistent undo
       -- ---------------
-      vim.api.nvim_exec([[
-        if has('persistent_undo')
-          set undofile
-          set undodir=$HOME/.vim/undo
-          endif
-      ]], false)
+      if vim.fn.has('persistent_undo') == 1 then
+        vim.opt.undofile = true
+        local undo_dir = vim.fn.expand('~/.vim/undo')
+        vim.opt.undodir = undo_dir
+
+        -- Optional but recommended: Create the directory if it doesn't exist
+        -- vim.fn.isdirectory returns 0 for false, 1 for true
+        if vim.fn.isdirectory(undo_dir) == 0 then
+          vim.fn.mkdir(undo_dir, 'p')
+          vim.notify('Created undo directory: ' .. undo_dir, vim.log.levels.INFO)
+        end
+      end
 
       -- ---------
       -- Telescope
@@ -206,6 +212,12 @@ in
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
       vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
+
+      vim.lsp.configure({
+          float = {
+              border = "rounded" -- Set the border for LSP floating windows globally
+          }
+      })
 
       -- ------------------
       -- LSP Autocompletion

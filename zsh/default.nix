@@ -27,6 +27,6 @@
   # Enables fuzzy history search
   programs.fzf = {
     enable = true;
-    historyWidgetOptions = ["--sort"];
+    historyWidgetOptions = ["--layout=reverse"];
   };
 }
