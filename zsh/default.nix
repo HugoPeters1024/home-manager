@@ -19,6 +19,8 @@
 
        # use direnv
        eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
+
+       alias with-cachix-key="vaultenv --secrets-file  <(echo \"cachix#signing-key\" ) -- "
     '';
   };
 
