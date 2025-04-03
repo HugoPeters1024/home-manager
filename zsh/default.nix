@@ -21,4 +21,9 @@
        eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
     '';
   };
+
+  # Enables fuzzy history search
+  programs.fzf = {
+    enable = true;
+  };
 }
