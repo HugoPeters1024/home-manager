@@ -36,6 +36,8 @@ let
               # Run in background (&) so it doesn't block foot.
               ${pkgs.foot}/bin/foot --app-id=float_me_pls --window-size-pixels=$(${cmd-half-monitor-width}/bin/cmd-half-monitor-width)x$(${cmd-half-monitor-height}/bin/cmd-half-monitor-height) /home/hugo/.nix-profile/bin/nvim "+''${line}" "''${path}"
               exit 0 # Successfully handled
+          else
+            notify-send "File not found" "$path"
           fi
           # If the path doesn't exist, fall through to default handler
       fi
