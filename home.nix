@@ -1,4 +1,13 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+
+let
+  cmd-half-monitor-width = pkgs.writeShellScriptBin "cmd-half-monitor-width" ''
+    swaymsg -t get_workspaces | jq -r ".[] | select(.focused==true).rect.width" | awk '{ print $1/2 }'
+  '';
+  cmd-half-monitor-height = pkgs.writeShellScriptBin "cmd-half-monitor-height" ''
+    swaymsg -t get_workspaces | jq -r ".[] | select(.focused==true).rect.height" | awk '{ print $1/2 }'
+  '';
+in
 
 {
   nixpkgs.config = {
@@ -11,11 +20,12 @@
   # nixGL.offloadWrapper = "nvidiaPrime";
   # nixGL.installScripts = [ "mesa" "nvidiaPrime" ];
 
+
   imports = [
     ./sway
     ./nvim
     ./zsh
-    ./foot
+    (import ./foot { inherit pkgs lib config cmd-half-monitor-width cmd-half-monitor-height; })
   ];
 
   # Home Manager needs a bit of information about you and the paths it should
@@ -35,6 +45,8 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = [
+    cmd-half-monitor-width
+    cmd-half-monitor-height
     pkgs.foot
     pkgs.direnv
     pkgs.ripgrep

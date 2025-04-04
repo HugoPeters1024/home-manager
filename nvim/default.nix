@@ -85,6 +85,8 @@ in
       -- Simple plugins
       -- --------------
       require("gitlinker").setup()       -- GBrowse & friends
+      vim.keymap.set('n', 'gb', ':Git blame<CR>', {noremap=true})
+
 
       -- --------
       -- Terminal

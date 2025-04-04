@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, cmd-get-half-width, cmd-get-half-height, ...}:
 
 {
   programs.waybar = {
@@ -112,7 +112,7 @@
           "format" = "{usage}% ";
           "tooltip" = false;
           "interval" = 2;
-          "on-click-right" = "${pkgs.foot}/bin/foot --app-id=float_me_pls ${pkgs.bottom}/bin/btm";
+          "on-click-right" = "${pkgs.foot}/bin/foot --app-id=float_me_pls --window-size-pixels=${cmd-get-half-width}x${cmd-get-half-height} ${pkgs.bottom}/bin/btm";
         };
 
         "memory" = {

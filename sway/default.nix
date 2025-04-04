@@ -4,9 +4,12 @@ let
   autotiling-script = import ./autotiling.nix;
   grimScreenshotSave = "(${pkgs.slurp}/bin/slurp | ${pkgs.grim}/bin/grim -g - - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/$(date +'%Y-%m-%d-%H%M%S_grim.png'))";
   grimScreenshotClipboard = "(${pkgs.slurp}/bin/slurp | ${pkgs.grim}/bin/grim -g - - | ${pkgs.wl-clipboard}/bin/wl-copy)";
+
+  cmd-get-half-width = "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).rect.width' | awk '{ print $1/2 }')";
+  cmd-get-half-height = "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).rect.height' | awk '{ print $1/2 }')";
 in {
   imports = [
-    ./waybar.nix
+    (import ./waybar.nix { inherit pkgs config cmd-get-half-width cmd-get-half-height; })
     ./autotiling.nix
   ];
 
@@ -97,7 +100,7 @@ in {
       bindsym Shift+Print exec ${grimScreenshotSave}
 
       # Floating windows
-      for_window [app_id="float_me_pls"] floating enable; move position center; resize set width 50 ppt height 50 ppt
+      for_window [app_id="float_me_pls"] floating enable, move position center
       for_window [app_id="nm-connection-editor"] floating enable
       for_window [app_id="wdisplays"] floating enable
       for_window [app_id="pavucontrol"] floating enable; resize set width 60 ppt height 60 ppt
