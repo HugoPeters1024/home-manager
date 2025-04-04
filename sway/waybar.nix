@@ -184,7 +184,7 @@
           "format-linked" = "{ifname} (No IP) ";
           "format-disconnected" = "Disconnected ⚠";
           "format-alt" = "{ifname}: {ipaddr}/{cidr}";
-          "on-click-right" = "nm-connection-editor";
+          "on-click-right" = "${pkgs.networkmanagerapplet}/bin/nm-connection-editor";
         };
 
         "pulseaudio" = {
