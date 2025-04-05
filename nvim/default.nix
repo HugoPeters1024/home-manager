@@ -47,6 +47,7 @@ in
       gitlinker-nvim
       toggleterm-nvim
       tidal-nvim
+      nerdtree
     ];
 
     extraLuaConfig = /* lua */ ''
@@ -98,46 +99,7 @@ in
       require("gitlinker").setup()       -- GBrowse & friends
       vim.keymap.set('n', 'gb', ':Git blame<CR>', {noremap=true})
 
-      -- ------------
-      -- Tidal Cycles
-      -- ------------
-
-      -- If a haskell file starts with the magic string on the first line, enable tidal mode
-      local tidal_magic_string = "-- enable tidalmode"
-      local tidal_marker_augroup = vim.api.nvim_create_augroup('TidalMagicMarkerSetup', { clear = true })
-      vim.api.nvim_create_autocmd('FileType', {
-        group = tidal_marker_augroup,
-        pattern = 'haskell', -- Trigger *only* when filetype is set to haskell
-        desc = "Check for Tidal magic marker in Haskell files",
-        callback = function(args)
-          local bufnr = args.buf
-          -- Ensure buffer is valid and still exists
-          if not vim.api.nvim_buf_is_valid(bufnr) then
-            return
-          end
-
-          -- Read the first line of the buffer
-          local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false) -- Get line 0 (the first line)
-
-          if #lines > 0 then
-            -- Trim leading/trailing whitespace for robustness
-            local first_line = vim.trim(lines[1])
-
-            -- Check if the first line matches the magic string
-            if first_line == tidal_magic_string then
-              -- If it matches, apply the buffer-local Tidal settings
-              vim.b.tidal_no_mappings = 1
-              vim.keymap.set('n', '<S-l>', ':TidalSend<CR>', opts)
-              vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
-              vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
-            end
-            -- Optional: If the line *doesn't* match, you could potentially *remove*
-            -- Tidal settings here if needed, but that adds complexity. Usually,
-            -- just applying them when the marker is present is sufficient.
-          end
-        end,
-      })
-
+      vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
       -- --------
       -- Terminal
@@ -301,6 +263,152 @@ in
           { name = 'buffer' },
         },
       }
+
+      -- ------------
+      -- Tidal Cycles
+      -- ------------
+
+      local ts_utils = require('nvim-treesitter.ts_utils')
+      local vim_treesitter = require('vim.treesitter')
+      --- Checks if a node represents a function call with the pattern 'd<n>`
+      ---@param node TSNode The node to check
+      ---@return boolean, TSNode? True if it's a matching function call, and the node itself
+      local function is_d_function_call(node)
+        if not node then
+          return false, nil
+        end
+
+        if node:type() == 'apply' then
+          local func_node = node:child(0) -- The 'function' child in an 'apply' node
+          if func_node and func_node:type() == 'variable' then
+            local func_name = vim_treesitter.get_node_text(func_node, vim.api.nvim_get_current_buf())
+            if func_name:match('^d%d+$') then
+              return true, node
+            end
+          end
+        elseif node:type() == "infix" then
+          local func_node = node:child(0) -- The 'function' child in an 'apply' node
+          if func_node and func_node:type() == 'variable' then
+            local func_name = vim_treesitter.get_node_text(func_node, vim.api.nvim_get_current_buf())
+            if func_name:match('^d%d+$') then
+              return true, node
+            end
+          end
+        end
+        return false, nil
+      end
+
+      --- Goes up from the cursor to find a function call named 'd<n>`
+      ---@return TSNode? The node representing the function call, or nil if not found
+      local function find_d_function_call_at_cursor()
+        local winid = 0 -- Current window
+        local pos = vim.api.nvim_win_get_cursor(winid)
+        local row, col = pos[1] - 1, pos[2]
+
+        local current_node = ts_utils.get_node_at_cursor()
+        -- print(current_node)
+        -- print(current_node:parent())
+        -- print(current_node:parent():type())
+        -- print(current_node:parent():child(0):type())
+        -- print(vim_treesitter.get_node_text(current_node:parent():child(0), vim.api.nvim_get_current_buf()))
+        -- print(is_d_function_call(current_node:parent()))
+        if not current_node then
+          return nil
+        end
+
+        -- Check the current node first
+        local found, node = is_d_function_call(current_node:parent())
+        if found then
+          return node
+        end
+
+        -- Traverse upwards
+        local parent = current_node:parent()
+        while parent do
+          local found_parent, parent_node = is_d_function_call(parent)
+          if found_parent then
+            return parent_node
+          end
+          parent = parent:parent()
+        end
+
+        return nil
+      end
+
+      local function select_node_text_api(node)
+        if not node then
+          return
+        end
+
+        local bufnr = vim.api.nvim_get_current_buf()
+        local start_row, start_col, end_row, end_col = vim_treesitter.get_node_range(node)
+
+        vim.api.nvim_buf_set_mark(bufnr, '<', start_row + 1, start_col, {})
+        vim.api.nvim_buf_set_mark(bufnr, '>', end_row + 1, end_col, {})
+
+        vim.cmd("normal! gv") -- Go to the first mark and select until the last mark
+      end
+
+      local function select_around_current_tidal_track()
+        local found_node = find_d_function_call_at_cursor()
+        if found_node then
+          select_node_text_api(found_node)
+        else
+         vim.notify('Warning: No function call matching the pattern found above the cursor.', vim.log.levels.WARN)
+        end
+      end
+
+      local function play_current_tidal_track()
+        local found_node = find_d_function_call_at_cursor()
+        if found_node then
+          local node_text = vim_treesitter.get_node_text(found_node, vim.api.nvim_get_current_buf())
+          local collapsed_text = node_text:gsub('\n', ' ')
+          --select_around_current_tidal_track()
+          vim.cmd("TidalSend1 " .. collapsed_text)
+        else
+         vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
+        end
+      end
+
+      vim.api.nvim_create_user_command('TidalSelectTrack', select_around_current_tidal_track, {})
+      vim.api.nvim_create_user_command('TidalSendNode', play_current_tidal_track, {})
+
+      -- If a haskell file starts with the magic string on the first line, enable tidal mode
+      local tidal_magic_string = "-- enable tidalmode"
+      local tidal_marker_augroup = vim.api.nvim_create_augroup('TidalMagicMarkerSetup', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = tidal_marker_augroup,
+        pattern = 'haskell', -- Trigger *only* when filetype is set to haskell
+        desc = "Check for Tidal magic marker in Haskell files",
+        callback = function(args)
+          local bufnr = args.buf
+          -- Ensure buffer is valid and still exists
+          if not vim.api.nvim_buf_is_valid(bufnr) then
+            return
+          end
+
+          -- Read the first line of the buffer
+          local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false) -- Get line 0 (the first line)
+
+          if #lines > 0 then
+            -- Trim leading/trailing whitespace for robustness
+            local first_line = vim.trim(lines[1])
+
+            -- Check if the first line matches the magic string
+            if first_line == tidal_magic_string then
+              -- If it matches, apply the buffer-local Tidal settings
+              vim.b.tidal_no_mappings = 1
+              vim.keymap.set('n', '<S-l>', ':TidalSendNode<CR>', opts)
+              vim.keymap.set('n', '<S-t>', ':TidalSelectTrack<CR>', opts)
+              vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
+              vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
+            end
+          end
+        end,
+      })
+
+
+
     '';
   };
 }
