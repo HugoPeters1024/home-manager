@@ -1,9 +1,19 @@
 { pkgs, lib, ...}:
 
 let
-  fromGitHub = import ../functions/fromGitHub.nix;
+  tidal-nvim =
+    {
+      plugin = pkgs.fetchFromGitHub {
+        owner = "tidalcycles";
+        repo = "vim-tidal";
+        rev = "e440fe5bdfe07f805e21e6872099685d38e8b761"; # Replace with a specific commit for stability
+        sha256 = "sha256:102j93zygjkrxgdxcsv4nqhnrfn1cbf4djrxlx5sly0bnvbs837j"; # Get this using nix-prefetch-git
+      };
+      type = "vim";
+      config = ''
+      '';
+    };
 in
-
 {
   programs.neovim = {
     enable = true;
@@ -36,6 +46,7 @@ in
       emmet-vim
       gitlinker-nvim
       toggleterm-nvim
+      tidal-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
@@ -86,6 +97,46 @@ in
       -- --------------
       require("gitlinker").setup()       -- GBrowse & friends
       vim.keymap.set('n', 'gb', ':Git blame<CR>', {noremap=true})
+
+      -- ------------
+      -- Tidal Cycles
+      -- ------------
+
+      -- If a haskell file starts with the magic string on the first line, enable tidal mode
+      local tidal_magic_string = "-- enable tidalmode"
+      local tidal_marker_augroup = vim.api.nvim_create_augroup('TidalMagicMarkerSetup', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = tidal_marker_augroup,
+        pattern = 'haskell', -- Trigger *only* when filetype is set to haskell
+        desc = "Check for Tidal magic marker in Haskell files",
+        callback = function(args)
+          local bufnr = args.buf
+          -- Ensure buffer is valid and still exists
+          if not vim.api.nvim_buf_is_valid(bufnr) then
+            return
+          end
+
+          -- Read the first line of the buffer
+          local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false) -- Get line 0 (the first line)
+
+          if #lines > 0 then
+            -- Trim leading/trailing whitespace for robustness
+            local first_line = vim.trim(lines[1])
+
+            -- Check if the first line matches the magic string
+            if first_line == tidal_magic_string then
+              -- If it matches, apply the buffer-local Tidal settings
+              vim.b.tidal_no_mappings = 1
+              vim.keymap.set('n', '<S-l>', ':TidalSend<CR>', opts)
+              vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
+              vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
+            end
+            -- Optional: If the line *doesn't* match, you could potentially *remove*
+            -- Tidal settings here if needed, but that adds complexity. Usually,
+            -- just applying them when the marker is present is sufficient.
+          end
+        end,
+      })
 
 
       -- --------
