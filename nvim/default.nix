@@ -10,8 +10,16 @@ let
         sha256 = "sha256:102j93zygjkrxgdxcsv4nqhnrfn1cbf4djrxlx5sly0bnvbs837j"; # Get this using nix-prefetch-git
       };
       type = "vim";
-      config = ''
-      '';
+    };
+  easypick-nvim =
+    {
+      plugin = pkgs.fetchFromGitHub {
+        owner = "axkirillov";
+        repo = "easypick.nvim";
+        rev = "a8772f39519574df1ed49110b4fe02456a240530"; # Replace with a specific commit for stability
+        sha256 = "sha256:19bhvy97xp4qjq0kcfxjivnjrs0vbbqkhdps3jd68xmhzks32337"; # Get this using nix-prefetch-git
+      };
+      type = "nvim-lua";
     };
 in
 {
@@ -43,6 +51,7 @@ in
       whitespace-nvim
       telescope-nvim
       telescope-fzf-native-nvim
+      easypick-nvim
       emmet-vim
       gitlinker-nvim
       toggleterm-nvim
@@ -264,6 +273,56 @@ in
         },
       }
 
+      -- --------
+      -- Easypick
+      -- --------
+
+      -- Stupid hack to get the right search path to find the module
+      local plugin_path = "${easypick-nvim.plugin}"
+      vim.opt.rtp:append(plugin_path)
+      package.path = package.path .. ";$" .. plugin_path .. "/lua/?.lua;$" .. plugin_path .. "/lua/?/init.lua"
+
+      easypick = require('easypick')
+      local actions = require "telescope.actions"
+      local action_state = require "telescope.actions.state"
+
+      local function write_selected_value(prompt_bufnr, _)
+      actions.select_default:replace(function()
+        actions.close(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        if selection and selection[1] then
+          local current_bufnr = vim.api.nvim_get_current_buf()
+          local cursor_pos = vim.api.nvim_win_get_cursor(0) -- [row, col] (1-based row, 0-based col)
+          local row = cursor_pos[1]
+          local col = cursor_pos[2]
+
+          local current_line = vim.api.nvim_buf_get_lines(current_bufnr, row - 1, row, false)[1]
+          local new_line = current_line:sub(1, col) .. selection[1] .. current_line:sub(col + 1)
+
+          vim.api.nvim_buf_set_lines(current_bufnr, row - 1, row, false, {new_line})
+          end
+        end)
+        return true
+      end
+
+      easypick.setup({
+        pickers = {
+          -- add your custom pickers here
+          -- below you can find some examples of what those can look like
+
+          -- list files inside current folder with default previewer
+          {
+            -- name for your custom picker, that can be invoked using :Easypick <name> (supports tab completion)
+            name = "tidal_samples",
+            -- the command to execute, output has to be a list of plain text entries
+            command = "cd /home/hugo/repos/tidal-scratchpad && find samples-extra -maxdepth 1 -type d -print",
+            -- specify your custom previwer, or use one of the easypick.previewers
+            previewer = easypick.previewers.default(),
+            action = write_selected_value,
+          },
+        }
+      })
+
       -- ------------
       -- Tidal Cycles
       -- ------------
@@ -402,12 +461,11 @@ in
               vim.keymap.set('n', '<S-t>', ':TidalSelectTrack<CR>', opts)
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
               vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
+              vim.keymap.set('i', '<S-space>', '<ESC>:Easypick tidal_samples<CR>', opts)
             end
           end
         end,
       })
-
-
 
     '';
   };
