@@ -32,11 +32,18 @@ in {
     executable = true;
   };
 
-  # Autotiling utilities
-  # home.file.".config/sway/autotiling" = {
-  #   source = autotiling-script{};
-  #   executable = true;
-  # };
+  home.file.".local/share/applications/fix-displays.desktop" = {
+    text = ''
+      [Desktop Entry]
+      Name=Fix Displays
+      Comment=Run wlr-randr to fix displays
+      Exec=~/.nix-profile/bin/fix-displays.sh
+      Icon=terminal
+      Terminal=true
+      Type=Application
+      Categories=Utility;
+    '';
+  };
 
   wayland.windowManager.sway = {
     enable = true;
@@ -65,9 +72,6 @@ in {
       # autotiling utilities
       exec_always ${config.home.homeDirectory}/.config/sway/autotiling
 
-      # Set the refresh rate and orientation
-      exec ${pkgs.wlr-randr}/bin/wlr-randr --output eDP-1 --mode 2560x1600@165.018997 --pos 0,560
-      exec ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 2560,0
 
       for_window [class="^.*"] border pixel 4
       for_window [floating] border pixel 5
@@ -82,7 +86,7 @@ in {
         modifier ${cfg.config.modifier}
       }
 
-      bindsym ${cfg.config.modifier}+o exec "rofi -modi drun,run -show drun"
+      bindsym ${cfg.config.modifier}+o exec "${pkgs.rofi}/bin/rofi -modi drun,run -show drun"
       bindsym ${cfg.config.modifier}+BackSpace exec --no-startup-id swaylock -c 333344
 
       # Brightness

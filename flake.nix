@@ -51,7 +51,20 @@
 
         "hugo@legion" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./home.nix ];
+          modules = [
+            ./home.nix
+            {
+              home.packages = with pkgs; [
+                (writeShellScriptBin "fix-displays.sh"
+                  ''
+                    #!/usr/bin/env sh
+                    # Set the refresh rate and orientation
+                    ${pkgs.wlr-randr}/bin/wlr-randr --output eDP-1 --mode 2560x1600@165.018997 --pos 0,560
+                    ${pkgs.wlr-randr}/bin/wlr-randr --output HDMI-A-1 --pos 2560,0
+                  '')
+              ];
+            }
+          ];
         };
       };
 
