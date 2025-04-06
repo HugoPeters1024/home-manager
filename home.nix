@@ -26,6 +26,7 @@ in
     ./nvim
     ./zsh
     (import ./foot { inherit pkgs lib config cmd-half-monitor-width cmd-half-monitor-height; })
+    ./supercollider
   ];
 
   # Home Manager needs a bit of information about you and the paths it should

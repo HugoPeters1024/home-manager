@@ -315,7 +315,8 @@ in
             -- name for your custom picker, that can be invoked using :Easypick <name> (supports tab completion)
             name = "tidal_samples",
             -- the command to execute, output has to be a list of plain text entries
-            command = "cd /home/hugo/repos/tidal-scratchpad && find samples-extra -maxdepth 1 -type d -print",
+            --command = "cd /home/hugo/repos/tidal-scratchpad && find samples-extra -maxdepth 1 -type d -print",
+            command = "cat ~/.config/SuperCollider/dirt_samples.txt",
             -- specify your custom previwer, or use one of the easypick.previewers
             previewer = easypick.previewers.default(),
             action = write_selected_value,
@@ -376,7 +377,7 @@ in
         end
 
         -- Check the current node first
-        local found, node = is_d_function_call(current_node:parent())
+        local found, node = is_d_function_call(current_node)
         if found then
           return node
         end
@@ -413,7 +414,7 @@ in
         if found_node then
           select_node_text_api(found_node)
         else
-         vim.notify('Warning: No function call matching the pattern found above the cursor.', vim.log.levels.WARN)
+         vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
         end
       end
 
@@ -458,9 +459,10 @@ in
               -- If it matches, apply the buffer-local Tidal settings
               vim.b.tidal_no_mappings = 1
               vim.keymap.set('n', '<S-l>', ':TidalSendNode<CR>', opts)
-              vim.keymap.set('n', '<S-t>', ':TidalSelectTrack<CR>', opts)
+              vim.keymap.set('n', 'vt', ':TidalSelectTrack<CR>', opts)
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
               vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
+              vim.keymap.set('n', '<S-space>', '<ESC>:Easypick tidal_samples<CR>', opts)
               vim.keymap.set('i', '<S-space>', '<ESC>:Easypick tidal_samples<CR>', opts)
             end
           end
