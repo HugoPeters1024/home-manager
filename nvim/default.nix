@@ -287,21 +287,30 @@ in
       local action_state = require "telescope.actions.state"
 
       local function write_selected_value(prompt_bufnr, _)
-      actions.select_default:replace(function()
-        actions.close(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        if selection and selection[1] then
-          local current_bufnr = vim.api.nvim_get_current_buf()
-          local cursor_pos = vim.api.nvim_win_get_cursor(0) -- [row, col] (1-based row, 0-based col)
-          local row = cursor_pos[1]
-          local col = cursor_pos[2]
+        actions.select_default:replace(function()
+          actions.close(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          if selection and selection[1] then
+            local current_bufnr = vim.api.nvim_get_current_buf()
+            local cursor_pos = vim.api.nvim_win_get_cursor(0) -- [row, col] (1-based row, 0-based col)
+            local row = cursor_pos[1]
+            local col = cursor_pos[2]
 
-          local current_line = vim.api.nvim_buf_get_lines(current_bufnr, row - 1, row, false)[1]
-          local new_line = current_line:sub(1, col) .. selection[1] .. current_line:sub(col + 1)
+            local current_line = vim.api.nvim_buf_get_lines(current_bufnr, row - 1, row, false)[1]
+            local new_line = current_line:sub(1, col+1) .. selection[1] .. current_line:sub(col)
 
-          vim.api.nvim_buf_set_lines(current_bufnr, row - 1, row, false, {new_line})
+            vim.api.nvim_buf_set_lines(current_bufnr, row - 1, row, false, {new_line})
           end
         end)
+        return true
+      end
+
+      local function play_selected_value()
+        local selection = action_state.get_selected_entry()
+        if selection and selection[1] then
+          vim.cmd('TidalSend1 once $ sound "' .. selection[1]..'"')
+          return false
+        end
         return true
       end
 
@@ -316,7 +325,7 @@ in
             name = "tidal_samples",
             -- the command to execute, output has to be a list of plain text entries
             --command = "cd /home/hugo/repos/tidal-scratchpad && find samples-extra -maxdepth 1 -type d -print",
-            command = "cat ~/.config/SuperCollider/dirt_samples.txt",
+            command = "cat ~/.config/SuperCollider/dirt_samples.txt | sort",
             -- specify your custom previwer, or use one of the easypick.previewers
             previewer = easypick.previewers.default(),
             action = write_selected_value,
@@ -462,8 +471,10 @@ in
               vim.keymap.set('n', 'vt', ':TidalSelectTrack<CR>', opts)
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
               vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
-              vim.keymap.set('n', '<S-space>', '<ESC>:Easypick tidal_samples<CR>', opts)
-              vim.keymap.set('i', '<S-space>', '<ESC>:Easypick tidal_samples<CR>', opts)
+              vim.keymap.set('n', 'fi', '<ESC>:Easypick tidal_samples<CR>', opts)
+              vim.keymap.set('i', 'fi', '<ESC>:Easypick tidal_samples<CR>', opts)
+              vim.keymap.set('n', '<F2>', play_selected_value, opts)
+              vim.keymap.set('i', '<F2>', play_selected_value, opts)
             end
           end
         end,

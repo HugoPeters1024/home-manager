@@ -31,28 +31,20 @@ s.reboot { // server options are only updated on reboot
 
         );
 
-        ~dirt.buffers.keysValuesDo { |key, value|
-            ["Buffer Name:", key, "Value Class:", value.class].postln;
-            value.postln; // Print the entire value for inspection
-        };
-
-		(
-			File.use("~/.config/SuperCollider/dirt_samples.txt".standardizePath, "w", { |f|
-                    ~dirt.buffers.keysValuesDo { |key, value|
-					var line = key;
-					                // Check if the value is an Array
-					if (value.isArray) {
-						// If it is, append the size (number of items) in parentheses
-						line = line ++ " (" ++ value.size ++ ")\n";
-					};
-					f.write(line++"\n");
-                    };
-			});
-		);
-
-
-
-
+        // generate a list of all audio samples which I use as input for neovim to search
+        // them easily.
+        (
+          File.use("~/.config/SuperCollider/dirt_samples.txt".standardizePath, "w", { |f|
+            ~dirt.buffers.keysValuesDo { |key, value|
+              // Check if the value is an Array (should always be the case AFAIK)
+              if (value.isArray) {
+                value.size.do { |i|
+                  f.write(key ++ ":" ++ i ++ "\n");
+                };
+              };
+            };
+          });
+        );
     };
 
     s.latency = 0.3; // increase this if you get "late" messages
