@@ -443,7 +443,7 @@ in
       vim.api.nvim_create_user_command('TidalSendNode', play_current_tidal_track, {})
 
       -- If a haskell file starts with the magic string on the first line, enable tidal mode
-      local tidal_magic_string = "-- enable tidalmode"
+      local tidal_magic_string = "-- nvim: enable tidalmode"
       local tidal_marker_augroup = vim.api.nvim_create_augroup('TidalMagicMarkerSetup', { clear = true })
       vim.api.nvim_create_autocmd('FileType', {
         group = tidal_marker_augroup,
