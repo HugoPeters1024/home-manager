@@ -223,6 +223,15 @@ in
         },
       }
 
+      lspconfig.ruff.setup {
+        capabilities = capabilities,
+        init_options = {
+          settings = {
+            -- Server settings should go here
+          }
+        }
+      }
+
       require("fidget").setup{}
       require("trouble").setup{}
       require('nvim-treesitter.configs').setup { highlight = { enable = true }, ... }
