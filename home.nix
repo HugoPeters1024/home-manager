@@ -59,6 +59,7 @@ in
     pkgs.xdg-desktop-portal
     pkgs.wlr-randr
     pkgs.asciiquarium
+    pkgs.nil
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the

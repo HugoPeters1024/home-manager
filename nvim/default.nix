@@ -232,6 +232,10 @@ in
         }
       }
 
+      lspconfig.nil_ls.setup {
+        capabilities = capabilities,
+      }
+
       require("fidget").setup{}
       require("trouble").setup{}
       require('nvim-treesitter.configs').setup { highlight = { enable = true }, ... }
@@ -318,9 +322,7 @@ in
         local selection = action_state.get_selected_entry()
         if selection and selection[1] then
           vim.cmd('TidalSend1 once $ sound "' .. selection[1]..'"')
-          return false
         end
-        return true
       end
 
       easypick.setup({
@@ -439,7 +441,8 @@ in
       local function play_current_tidal_track()
         local found_node = find_d_function_call_at_cursor()
         if found_node then
-          local node_text = vim_treesitter.get_node_text(found_node, vim.api.nvim_get_current_buf())
+          local bufnr = vim.api.nvim_get_current_buf()
+          local node_text = vim_treesitter.get_node_text(found_node, bufnr)
           local collapsed_text = node_text:gsub('\n', ' ')
           --select_around_current_tidal_track()
           vim.cmd("TidalSend1 " .. collapsed_text)
@@ -481,7 +484,6 @@ in
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
               vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
               vim.keymap.set('n', 'fi', '<ESC>:Easypick tidal_samples<CR>', opts)
-              vim.keymap.set('i', 'fi', '<ESC>:Easypick tidal_samples<CR>', opts)
               vim.keymap.set('n', '<F2>', play_selected_value, opts)
               vim.keymap.set('i', '<F2>', play_selected_value, opts)
             end
