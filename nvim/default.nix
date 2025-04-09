@@ -77,7 +77,7 @@ in
       vim.o.termguicolors = true
       vim.g.gitblame_enabled = 0
 
-      vim.cmd('colorscheme nordfox')
+      vim.cmd('colorscheme nightfox')
 
       -- Use gj/gk for j/k when no count is provided (visual line movement)
       -- Otherwise, use regular j/k (logical line movement)
@@ -321,7 +321,12 @@ in
       local function play_selected_value()
         local selection = action_state.get_selected_entry()
         if selection and selection[1] then
-          vim.cmd('TidalSend1 once $ sound "' .. selection[1]..'"')
+          local sample_name = selection[1]
+          local space_index = string.find(sample_name, " ")
+          if space_index then
+            sample_name = string.sub(sample_name, 1, space_index - 1)
+          end
+          vim.cmd('TidalSend1 once $ sound "' .. sample_name ..'"')
         end
       end
 

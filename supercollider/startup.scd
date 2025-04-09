@@ -39,7 +39,17 @@ s.reboot { // server options are only updated on reboot
               // Check if the value is an Array (should always be the case AFAIK)
               if (value.isArray) {
                 value.size.do { |i|
-                  f.write(key ++ ":" ++ i ++ "\n");
+                  //f.write(key ++ ":" ++ i ++ "\n");
+                  // Assuming 'value' contains buffer indices
+                    var buffer = value[i];
+                    var duration = 0;
+                    var sampleName = key ++ ":" ++ i;
+                    if (buffer.notNil) {
+                        duration = buffer.duration;
+                    };
+                    duration = (duration * 100).asInteger / 100.0;
+
+                    f.write(sampleName.padRight(20, " ") ++ duration.asString ++ "s\n");
                 };
               };
             };
