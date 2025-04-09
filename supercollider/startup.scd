@@ -18,6 +18,8 @@ s.reboot { // server options are only updated on reboot
         ~dirt = SuperDirt(2, s); // two output channels, increase if you want to pan across more channels
         ~dirt.loadSoundFiles;     // load samples (path containing a wildcard can be passed in)
         ~dirt.loadSoundFiles("/home/hugo/repos/tidal-scratchpad/samples-extra/*");
+        ~dirt.loadSoundFiles("/home/hugo/repos/tidal-scratchpad/VintageDrums/*");
+        ~dirt.loadSoundFiles("/home/hugo/repos/tidal-scratchpad/extra/*");
         // for example: ~dirt.loadSoundFiles("/Users/myUserName/Dirt/samples/*");
         // s.sync; // optionally: wait for samples to be read
         ~dirt.start(57120, 0 ! 12);     // start listening on port 57120, create two busses each sending audio to channel 0
@@ -39,17 +41,16 @@ s.reboot { // server options are only updated on reboot
               // Check if the value is an Array (should always be the case AFAIK)
               if (value.isArray) {
                 value.size.do { |i|
-                  //f.write(key ++ ":" ++ i ++ "\n");
                   // Assuming 'value' contains buffer indices
-                    var buffer = value[i];
-                    var duration = 0;
-                    var sampleName = key ++ ":" ++ i;
-                    if (buffer.notNil) {
-                        duration = buffer.duration;
-                    };
-                    duration = (duration * 100).asInteger / 100.0;
+                  var buffer = value[i];
+                  var duration = 0;
+                  var sampleName = key ++ ":" ++ i;
+                  if (buffer.notNil) {
+                      duration = buffer.duration;
+                  };
+                  duration = (duration * 100).asInteger / 100.0;
 
-                    f.write(sampleName.padRight(20, " ") ++ duration.asString ++ "s\n");
+                  f.write(sampleName.padRight(20, " ") ++ duration.asString ++ "s\n");
                 };
               };
             };

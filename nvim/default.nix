@@ -346,6 +346,16 @@ in
             previewer = easypick.previewers.default(),
             action = write_selected_value,
           },
+          {
+            -- name for your custom picker, that can be invoked using :Easypick <name> (supports tab completion)
+            name = "tidal_instruments",
+            -- the command to execute, output has to be a list of plain text entries
+            --command = "cd /home/hugo/repos/tidal-scratchpad && find samples-extra -maxdepth 1 -type d -print",
+            command = "cat ~/.config/SuperCollider/dirt_samples.txt | sed 's/:.*//' | sort --unique ",
+            -- specify your custom previwer, or use one of the easypick.previewers
+            previewer = easypick.previewers.default(),
+            action = write_selected_value,
+          },
         }
       })
 
@@ -488,7 +498,8 @@ in
               vim.keymap.set('n', 'vt', ':TidalSelectTrack<CR>', opts)
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
               vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
-              vim.keymap.set('n', 'fi', '<ESC>:Easypick tidal_samples<CR>', opts)
+              vim.keymap.set('n', 'fi', '<ESC>:Easypick tidal_instruments<CR>', opts)
+              vim.keymap.set('n', 'fs', '<ESC>:Easypick tidal_samples<CR>', opts)
               vim.keymap.set('n', '<F2>', play_selected_value, opts)
               vim.keymap.set('i', '<F2>', play_selected_value, opts)
             end
