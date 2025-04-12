@@ -304,13 +304,20 @@ in
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry()
           if selection and selection[1] then
+            local sample_name = selection[1]
+            -- Keep only everyting before the first space
+            local space_index = string.find(sample_name, " ")
+            if space_index then
+              sample_name = string.sub(sample_name, 1, space_index - 1)
+            end
+
             local current_bufnr = vim.api.nvim_get_current_buf()
             local cursor_pos = vim.api.nvim_win_get_cursor(0) -- [row, col] (1-based row, 0-based col)
             local row = cursor_pos[1]
             local col = cursor_pos[2]
 
             local current_line = vim.api.nvim_buf_get_lines(current_bufnr, row - 1, row, false)[1]
-            local new_line = current_line:sub(1, col+1) .. selection[1] .. current_line:sub(col)
+            local new_line = current_line:sub(1, col+1) .. sample_name .. current_line:sub(col)
 
             vim.api.nvim_buf_set_lines(current_bufnr, row - 1, row, false, {new_line})
           end
