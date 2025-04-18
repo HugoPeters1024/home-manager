@@ -110,6 +110,7 @@ in {
       bindsym Shift+Print exec ${grimScreenshotSave}
 
       # Floating windows
+      for_window [title="chicken game"] floating enable, move position center
       for_window [app_id="float_me_pls"] floating enable, move position center
       for_window [app_id="nm-connection-editor"] floating enable
       for_window [app_id="wdisplays"] floating enable

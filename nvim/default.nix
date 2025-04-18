@@ -116,7 +116,9 @@ in
       -- --------
       -- Terminal
       -- --------
-      require("toggleterm").setup()
+      require("toggleterm").setup({
+        shell = "${pkgs.zsh}/bin/zsh",
+      })
       function _G.set_terminal_keymaps()
         local opts = {buffer = 0}
         vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
