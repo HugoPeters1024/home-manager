@@ -377,8 +377,9 @@ in
 
       -- Setup a way to flash a highlight
       namespace_id = vim.api.nvim_create_namespace('HighlightLineNamespace')
-      vim.api.nvim_command('highlight default HighlightLine guifg=#ff007c gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
-      function flash_highlight(start_line, start_col, end_line, end_col, bufnr)
+      vim.api.nvim_command('highlight default HighlightLineActive guifg=#ff007c gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
+      vim.api.nvim_command('highlight default HighlightLineHush guifg=#7c00ff gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
+      function flash_highlight(start_line, start_col, end_line, end_col, bufnr, hl_group)
         -- Use the current buffer if no buffer number is provided.
         bufnr = bufnr or vim.api.nvim_get_current_buf()
 
@@ -389,7 +390,7 @@ in
         end
 
         -- Validate input parameters.
-        if not (start_line and start_col and end_line and end_col) then
+        if not (start_line and start_col and end_line and end_col and hl_group) then
           vim.notify("Missing arguments to flash_highlight", vim.log.levels.ERROR)
           return
         end
@@ -408,7 +409,7 @@ in
           {
             end_line = end_line - 1, -- nvim_buf_set_extmark uses 0-based indexing.
             end_col = end_col,     -- nvim_buf_set_extmark uses 0-based indexing for end_col too.
-            hl_group = "HighlightLine",
+            hl_group = hl_group,
             --buffer = bufnr, -- Not needed, the bufnr argument to the function is sufficient.
           }
         )
@@ -429,7 +430,7 @@ in
       ---@return boolean, TSNode? True if it's a matching function call, and the node itself
       local function is_d_function_call(node)
         if not node then
-          return false, nil
+          return false, nil, nil
         end
 
         if node:type() == 'apply' then
@@ -437,7 +438,7 @@ in
           if func_node and func_node:type() == 'variable' then
             local func_name = vim_treesitter.get_node_text(func_node, vim.api.nvim_get_current_buf())
             if func_name:match('^d%d+$') then
-              return true, node
+              return true, node, func_name
             end
           end
         elseif node:type() == "infix" then
@@ -445,11 +446,11 @@ in
           if func_node and func_node:type() == 'variable' then
             local func_name = vim_treesitter.get_node_text(func_node, vim.api.nvim_get_current_buf())
             if func_name:match('^d%d+$') then
-              return true, node
+              return true, node, func_name
             end
           end
         end
-        return false, nil
+        return false, nil, nil
       end
 
       --- Goes up from the cursor to find a function call named 'd<n>`
@@ -467,26 +468,26 @@ in
         -- print(vim_treesitter.get_node_text(current_node:parent():child(0), vim.api.nvim_get_current_buf()))
         -- print(is_d_function_call(current_node:parent()))
         if not current_node then
-          return nil
+          return nil, nil
         end
 
         -- Check the current node first
-        local found, node = is_d_function_call(current_node)
+        local found, node, track = is_d_function_call(current_node)
         if found then
-          return node
+          return node, track
         end
 
         -- Traverse upwards
         local parent = current_node:parent()
         while parent do
-          local found_parent, parent_node = is_d_function_call(parent)
+          local found_parent, parent_node, track = is_d_function_call(parent)
           if found_parent then
-            return parent_node
+            return parent_node, track
           end
           parent = parent:parent()
         end
 
-        return nil
+        return nil, nil
       end
 
       local function select_node_text_api(node)
@@ -504,7 +505,7 @@ in
       end
 
       local function select_around_current_tidal_track()
-        local found_node = find_d_function_call_at_cursor()
+        local found_node, _ = find_d_function_call_at_cursor()
         if found_node then
           select_node_text_api(found_node)
         else
@@ -513,7 +514,7 @@ in
       end
 
       local function play_current_tidal_track()
-        local found_node = find_d_function_call_at_cursor()
+        local found_node, _ = find_d_function_call_at_cursor()
         if found_node then
           local bufnr = vim.api.nvim_get_current_buf()
           local node_text = vim_treesitter.get_node_text(found_node, bufnr)
@@ -521,8 +522,20 @@ in
           --select_around_current_tidal_track()
 
           local start_row, start_col, end_row, end_col = vim_treesitter.get_node_range(found_node)
-          flash_highlight(start_row+1, start_col, end_row+1, end_col, bufnr)
+          flash_highlight(start_row+1, start_col, end_row+1, end_col, bufnr, "HighlightLineActive")
           vim.cmd("TidalSend1 " .. collapsed_text)
+        else
+         vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
+        end
+      end
+
+      local function hush_current_tidal_track()
+        local found_node, track = find_d_function_call_at_cursor()
+        if found_node then
+          local bufnr = vim.api.nvim_get_current_buf()
+          local start_row, start_col, end_row, end_col = vim_treesitter.get_node_range(found_node)
+          flash_highlight(start_row+1, start_col, end_row+1, end_col, bufnr, "HighlightLineHush")
+          vim.cmd("TidalSend1 " .. track .. ' $ sound ""')
         else
          vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
         end
@@ -530,6 +543,7 @@ in
 
       vim.api.nvim_create_user_command('TidalSelectTrack', select_around_current_tidal_track, {})
       vim.api.nvim_create_user_command('TidalSendNode', play_current_tidal_track, {})
+      vim.api.nvim_create_user_command('TidalHushNode', hush_current_tidal_track, {})
 
       -- If a haskell file starts with the magic string on the first line, enable tidal mode
       local tidal_magic_string = "-- nvim: enable tidalmode"
@@ -557,6 +571,7 @@ in
               -- If it matches, apply the buffer-local Tidal settings
               vim.b.tidal_no_mappings = 1
               vim.keymap.set('n', '<S-l>', ':TidalSendNode<CR>', opts)
+              vim.keymap.set('n', '<S-h>', ':TidalHushNode<CR>', opts)
               vim.keymap.set('n', 'vt', ':TidalSelectTrack<CR>', opts)
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
               vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
