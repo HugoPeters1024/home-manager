@@ -57,6 +57,7 @@ in
       toggleterm-nvim
       tidal-nvim
       nerdtree
+      transparent-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
@@ -107,6 +108,8 @@ in
       -- --------------
       require("gitlinker").setup()       -- GBrowse & friends
       vim.keymap.set('n', 'gb', ':Git blame<CR>', {noremap=true})
+
+      require('transparent').setup()
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
