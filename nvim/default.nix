@@ -375,6 +375,53 @@ in
       -- Tidal Cycles
       -- ------------
 
+      -- Setup a way to flash a highlight
+      namespace_id = vim.api.nvim_create_namespace('HighlightLineNamespace')
+      vim.api.nvim_command('highlight default HighlightLine guifg=#ff007c gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
+      function flash_highlight(start_line, start_col, end_line, end_col, bufnr)
+        -- Use the current buffer if no buffer number is provided.
+        bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+        -- Check if the buffer number is valid.
+        if not vim.api.nvim_buf_is_valid(bufnr) then
+          vim.notify("Invalid buffer number", vim.log.levels.ERROR)
+          return
+        end
+
+        -- Validate input parameters.
+        if not (start_line and start_col and end_line and end_col) then
+          vim.notify("Missing arguments to flash_highlight", vim.log.levels.ERROR)
+          return
+        end
+
+        if start_line < 1 or start_col < 1 or end_line < 1 or end_col < 1 then
+          vim.notify("Line and column numbers must be >= 1", vim.log.levels.ERROR)
+          return
+        end
+
+        -- Use nvim_buf_set_extmark to add the highlight.
+        local extmark_id = vim.api.nvim_buf_set_extmark(
+          bufnr,
+          namespace_id,
+          start_line - 1, -- nvim_buf_set_extmark uses 0-based indexing.
+          start_col - 1, -- nvim_buf_set_extmark uses 0-based indexing.
+          {
+            end_line = end_line - 1, -- nvim_buf_set_extmark uses 0-based indexing.
+            end_col = end_col,     -- nvim_buf_set_extmark uses 0-based indexing for end_col too.
+            hl_group = "HighlightLine",
+            --buffer = bufnr, -- Not needed, the bufnr argument to the function is sufficient.
+          }
+        )
+        -- Function to clear the highlight after the specified duration
+        local function clear_highlight()
+          vim.api.nvim_buf_del_extmark(bufnr, namespace_id, extmark_id)
+        end
+
+        -- Use a timer to call the clear_highlight function after the duration
+        vim.defer_fn(clear_highlight, 250)
+        return extmark_id
+      end
+
       local ts_utils = require('nvim-treesitter.ts_utils')
       local vim_treesitter = require('vim.treesitter')
       --- Checks if a node represents a function call with the pattern 'd<n>`
@@ -472,6 +519,9 @@ in
           local node_text = vim_treesitter.get_node_text(found_node, bufnr)
           local collapsed_text = node_text:gsub('\n', ' ')
           --select_around_current_tidal_track()
+
+          local start_row, start_col, end_row, end_col = vim_treesitter.get_node_range(found_node)
+          flash_highlight(start_row+1, start_col, end_row+1, end_col, bufnr)
           vim.cmd("TidalSend1 " .. collapsed_text)
         else
          vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
@@ -518,6 +568,7 @@ in
           end
         end,
       })
+
 
     '';
   };
