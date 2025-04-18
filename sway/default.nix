@@ -45,6 +45,10 @@ in {
     '';
   };
 
+  home.file.".config/sway/wallpaper.jpg" = {
+    source = ./wallpaper.jpg;
+  };
+
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true; # Fixes common issues with GTK 3 apps
@@ -71,6 +75,8 @@ in {
 
       # autotiling utilities
       exec_always ${config.home.homeDirectory}/.config/sway/autotiling
+
+      exec_always ${pkgs.swaybg}/bin/swaybg --image ${config.home.homeDirectory}/.config/sway/wallpaper.jpg
 
 
       for_window [class="^.*"] border pixel 4
