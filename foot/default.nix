@@ -64,7 +64,7 @@ in
       };
       # gruvbox theme from https://codeberg.org/dnkl/foot/src/branch/master/themes/gruvbox-dark
       colors = {
-        alpha = 0.97;
+        alpha = 0.95;
         background="282828";
         foreground="ebdbb2";
         regular0="282828";

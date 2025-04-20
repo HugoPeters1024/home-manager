@@ -377,7 +377,7 @@ in
 
       -- Setup a way to flash a highlight
       namespace_id = vim.api.nvim_create_namespace('HighlightLineNamespace')
-      vim.api.nvim_command('highlight default HighlightLineActive guifg=#ff007c gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
+      vim.api.nvim_command('highlight default HighlightLineActive guibg=#4c566a gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
       vim.api.nvim_command('highlight default HighlightLineHush guifg=#7c00ff gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
       function flash_highlight(start_line, start_col, end_line, end_col, bufnr, hl_group)
         -- Use the current buffer if no buffer number is provided.
