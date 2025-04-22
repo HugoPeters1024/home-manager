@@ -61,6 +61,8 @@ in
     pkgs.asciiquarium
     pkgs.nil
     pkgs.swaybg
+    pkgs.qpwgraph
+    pkgs.blueman
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the

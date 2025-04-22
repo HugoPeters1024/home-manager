@@ -92,7 +92,7 @@ in {
         modifier ${cfg.config.modifier}
       }
 
-      bindsym ${cfg.config.modifier}+o exec "${pkgs.rofi}/bin/rofi -modi drun,run -show drun"
+      bindsym ${cfg.config.modifier}+o exec "XDG_DATA_DIRS=$HOME/.nix-profile/share:$XDG_DATA_DIRS PATH=$HOME/.nix-profile/bin:$PATH ${pkgs.rofi}/bin/rofi -modi drun,run -show drun"
       bindsym ${cfg.config.modifier}+BackSpace exec --no-startup-id swaylock -c 333344
 
       # Brightness
