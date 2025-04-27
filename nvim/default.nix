@@ -378,7 +378,7 @@ in
       -- Setup a way to flash a highlight
       namespace_id = vim.api.nvim_create_namespace('HighlightLineNamespace')
       vim.api.nvim_command('highlight default HighlightLineActive guibg=#4c566a gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
-      vim.api.nvim_command('highlight default HighlightLineHush guifg=#7c00ff gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
+      vim.api.nvim_command('highlight default HighlightLineHush guifg=#ff0018 gui=bold ctermfg=198 cterm=bold ctermbg=darkgreen')
       function flash_highlight(start_line, start_col, end_line, end_col, bufnr, hl_group)
         -- Use the current buffer if no buffer number is provided.
         bufnr = bufnr or vim.api.nvim_get_current_buf()
@@ -522,7 +522,7 @@ in
           --select_around_current_tidal_track()
 
           local start_row, start_col, end_row, end_col = vim_treesitter.get_node_range(found_node)
-          flash_highlight(start_row+1, start_col, end_row+1, end_col, bufnr, "HighlightLineActive")
+          flash_highlight(start_row+1, start_col+1, end_row+1, end_col, bufnr, "HighlightLineActive")
           vim.cmd("TidalSend1 " .. collapsed_text)
         else
          vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
@@ -574,7 +574,7 @@ in
               vim.keymap.set('n', '<S-h>', ':TidalHushNode<CR>', opts)
               vim.keymap.set('n', 'vt', ':TidalSelectTrack<CR>', opts)
               vim.keymap.set('v', '<S-l>', ':TidalSend<CR>', opts)
-              vim.keymap.set('n', '<S-o>', ':TidalHush<CR>', opts)
+              vim.keymap.set('n', '<S-y>', ':TidalHush<CR>', opts)
               vim.keymap.set('n', 'fi', '<ESC>:Easypick tidal_instruments<CR>', opts)
               vim.keymap.set('n', 'fs', '<ESC>:Easypick tidal_samples<CR>', opts)
               vim.keymap.set('n', '<F2>', play_selected_value, opts)

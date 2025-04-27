@@ -33,6 +33,11 @@ s.reboot { // server options are only updated on reboot
 
         );
 
+        // synths
+        (
+            "/home/hugo/.config/SuperCollider/synths/loadAll.scd".load();
+        );
+
         // generate a list of all audio samples which I use as input for neovim to search
         // them easily.
         (
@@ -54,6 +59,11 @@ s.reboot { // server options are only updated on reboot
                 };
               };
             };
+
+            // Add the synthesisers to the sample index
+            SynthDescLib.global.synthDescs.keysDo({ |key|
+              f.write(key.asString.padRight(20, " ") ++ "synth\n");
+            });
           });
         );
     };
