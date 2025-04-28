@@ -9,7 +9,7 @@ Currently works with sway version 1.9.
 Newer versions don't seem to work at the moment :/
 
 ```
-sudo apt install sway, swaylock, fonts-font-awesome, pavucontrol, wdisplays, xdg-desktop-portal-wlr
+sudo apt install sway, swaylock, fonts-font-awesome, pavucontrol, wdisplays, xdg-desktop-portal-wlr, blueman, pipewire-jack
 ```
 
 create /etc/nix/configuration:
@@ -18,13 +18,7 @@ create /etc/nix/configuration:
 security.polkit.enable = true
 ```
 
-add the nixgl channel (double check the home manager installation guide for this step)
-
-```
-nix-channel --add https://github.com/nix-community/nixGL/archive/main.tar.gz nixgl && nix-channel --update
-```
-
-enable the config by running
+enable the config by running (might have to `nix develop` the first time)
 
 ```
 home-manager switch
