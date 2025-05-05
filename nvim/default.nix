@@ -518,12 +518,16 @@ in
         if found_node then
           local bufnr = vim.api.nvim_get_current_buf()
           local node_text = vim_treesitter.get_node_text(found_node, bufnr)
-          local collapsed_text = node_text:gsub('\n', ' ')
-          --select_around_current_tidal_track()
 
           local start_row, start_col, end_row, end_col = vim_treesitter.get_node_range(found_node)
           flash_highlight(start_row+1, start_col+1, end_row+1, end_col, bufnr, "HighlightLineActive")
-          vim.cmd("TidalSend1 " .. collapsed_text)
+
+          local lines = vim.split(node_text, "\n", { plain = true })
+          vim.cmd("TidalSend1 :{")
+          for _, line in ipairs(lines) do
+            vim.cmd("TidalSend1 " .. line)
+          end
+          vim.cmd("TidalSend1 :}")
         else
          vim.notify('Warning: No tidal track function found above the cursor.', vim.log.levels.WARN)
         end
