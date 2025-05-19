@@ -330,7 +330,10 @@ in
         return true
       end
 
-      local function play_selected_value()
+      local function play_selected_value(note)
+        if note == nil then
+          note = 0
+        end
         local selection = action_state.get_selected_entry()
         if selection and selection[1] then
           local sample_name = selection[1]
@@ -338,7 +341,7 @@ in
           if space_index then
             sample_name = string.sub(sample_name, 1, space_index - 1)
           end
-          vim.cmd('TidalSend1 once $ sound "' .. sample_name ..'"')
+          vim.cmd('TidalSend1 once $ note "' .. note .. '" # sound "' .. sample_name ..'"')
         end
       end
 
@@ -583,6 +586,9 @@ in
               vim.keymap.set('n', 'fs', '<ESC>:Easypick tidal_samples<CR>', opts)
               vim.keymap.set('n', '<F2>', play_selected_value, opts)
               vim.keymap.set('i', '<F2>', play_selected_value, opts)
+              -- Higher note is useful for some midi synths
+              vim.keymap.set('n', '<F3>', (function()play_selected_value(42)end), opts)
+              vim.keymap.set('i', '<F3>', (function()play_selected_value(42)end), opts)
             end
           end
         end,
