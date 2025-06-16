@@ -241,6 +241,10 @@ in
         capabilities = capabilities,
       }
 
+      lspconfig.ts_ls.setup {
+        capabilities = capabilities,
+      }
+
       require("fidget").setup{}
       require("trouble").setup{}
       require('nvim-treesitter.configs').setup { highlight = { enable = true }, ... }
