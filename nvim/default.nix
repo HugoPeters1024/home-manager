@@ -193,6 +193,7 @@ in
 	    vim.keymap.set('n', 'fe', telescope.diagnostics, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
       vim.keymap.set('n', 'fh', telescope.current_buffer_fuzzy_find, {})
+      vim.keymap.set('n', 'f<space>', telescope.resume, {})
 
       -- ----------------
       -- LSP
