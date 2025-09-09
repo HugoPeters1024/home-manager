@@ -113,6 +113,7 @@
           modules = [
             ./nvim/default.nix
             ./zsh/default.nix
+            ./kitty/default.nix
             {
               home.packages = [ pkgs.home-manager ];
               home.username = "hpeters";
