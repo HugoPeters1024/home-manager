@@ -23,6 +23,13 @@ let
     };
 in
 {
+  home.packages = [
+    pkgs.nil
+    pkgs.ripgrep
+    pkgs.font-awesome
+    pkgs.nerd-fonts.jetbrains-mono
+  ];
+
   programs.neovim = {
     enable = true;
     defaultEditor = true;

@@ -25,6 +25,10 @@
     '';
   };
 
+  programs.direnv = {
+    enable = true;
+  };
+
   # Enables fuzzy history search
   programs.fzf = {
     enable = true;
