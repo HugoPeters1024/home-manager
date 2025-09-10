@@ -1,5 +1,4 @@
-{ pkgs, lib, ... }:
-
+{ pkgs, lib, username, ...}:
 {
   programs.zsh = {
     enable = true;
@@ -18,9 +17,10 @@
       custom = "$HOME/.oh-my-custom";
     };
     envExtra = ''
-      # use whatever installed by rustup
-      export PATH="/home/hugo/.cargo/bin:$PATH"
-      export SHELL=/bin/zsh
+       # use whatever installed by rustup
+       export PATH="/home/hugo/.cargo/bin:$PATH"
+       export PATH="/Users/hpeters/.cargo/bin:$PATH"
+       export SHELL=${pkgs.zsh}/bin/zsh
 
       # use direnv
       eval "$(${pkgs.direnv}/bin/direnv hook zsh)"

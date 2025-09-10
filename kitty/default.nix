@@ -13,6 +13,8 @@
     };
 
     extraConfig = ''
+      enable_audio_bell no
+
       # Gruvbox Dark colors
       foreground            #ebdbb2
       background            #282828
