@@ -14,6 +14,7 @@
 
     extraConfig = ''
       enable_audio_bell no
+      bell_on_tab no
 
       # Gruvbox Dark colors
       foreground            #ebdbb2

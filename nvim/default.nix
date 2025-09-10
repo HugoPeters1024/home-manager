@@ -48,6 +48,11 @@ in
       fidget-nvim
       trouble-nvim
 
+      # Git integration
+      vim-fugitive
+      vim-rhubarb
+      fugitive-gitlab-vim
+
       # Autocompletion
       nvim-cmp
       cmp-nvim-lsp
