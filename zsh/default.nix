@@ -1,4 +1,4 @@
-{ pkgs, lib, ...}:
+{ pkgs, lib, ... }:
 
 {
   programs.zsh = {
@@ -9,19 +9,30 @@
     history.size = 100000;
     oh-my-zsh = {
       enable = true;
-      plugins = ["git" "history-substring-search" "ssh-agent"];
+      plugins = [
+        "git"
+        "history-substring-search"
+        "ssh-agent"
+      ];
       theme = "agnoster";
       custom = "$HOME/.oh-my-custom";
     };
     envExtra = ''
-       # use whatever installed by rustup
-       export PATH="/home/hugo/.cargo/bin:$PATH"
-       export SHELL=${pkgs.zsh}/bin/zsh
+      # use whatever installed by rustup
+      export PATH="/home/hugo/.cargo/bin:$PATH"
+      export SHELL=/bin/zsh
 
-       # use direnv
-       eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
+      # use direnv
+      eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
 
-       alias with-cachix-key="vaultenv --secrets-file  <(echo \"cachix#signing-key\" ) -- "
+      alias with-cachix-key="vaultenv --secrets-file  <(echo \"cachix#signing-key\" ) -- "
+    '';
+
+    initContent = ''
+      # If connected over SSH, prepend a yellow "REMOTE" badge to the prompt
+      if [[ -n $SSH_CONNECTION || -n $SSH_TTY || -n $SSH_CLIENT ]]; then
+        PROMPT="%K{red}%F{white} REMOTE %f%k $PROMPT"
+      fi
     '';
   };
 
@@ -32,6 +43,6 @@
   # Enables fuzzy history search
   programs.fzf = {
     enable = true;
-    historyWidgetOptions = ["--layout=reverse"];
+    historyWidgetOptions = [ "--layout=reverse" ];
   };
 }
