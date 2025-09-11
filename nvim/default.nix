@@ -73,6 +73,7 @@ in
 
       # AI
       windsurf-nvim
+      avante-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
@@ -278,6 +279,7 @@ in
       -- --------
       -- AI
       -- --------
+      require("avante").setup()
       require("codeium").setup({
       -- Optionally disable cmp source if using virtual text only
       enable_cmp_source = false,
