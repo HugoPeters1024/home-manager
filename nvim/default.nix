@@ -280,6 +280,10 @@ in
       -- AI
       -- --------
       require("avante").setup()
+      vim.keymap.set('n', '<C-a>', ':AvanteChat<CR>', {noremap=true, silent=true})
+      vim.keymap.set('i', '<C-a>', '<ESC>:AvanteChat<CR>', {noremap=true, silent=true})
+
+
       require("codeium").setup({
       -- Optionally disable cmp source if using virtual text only
       enable_cmp_source = false,
