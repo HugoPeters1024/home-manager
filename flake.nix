@@ -81,7 +81,7 @@
           ];
         };
 
-        "hpeters@Hugos-MacBook-Pro" = home-manager.lib.homeManagerConfiguration {
+        "hpeters@Mac" = home-manager.lib.homeManagerConfiguration {
           pkgs = m1pkgs;
           modules = [
             ./nvim/default.nix
