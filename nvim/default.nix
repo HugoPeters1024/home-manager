@@ -25,6 +25,8 @@ in
 {
   home.packages = [
     pkgs.nil
+    pkgs.typescript-language-server
+
     pkgs.ripgrep
     pkgs.font-awesome
     pkgs.nerd-fonts.jetbrains-mono
@@ -362,6 +364,48 @@ in
           { name = 'buffer' },
         },
       }
+
+      -- -------
+      -- Strudel
+      -- -------
+
+      local strudel = require("strudel")
+      strudel.setup()
+
+      -- If a file starts with the magic string on the first line, enable tidal mode
+      local strudel_magic_string = "// nvim: enable strudel"
+      local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelMagicMarkerSetup', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = strudel_marker_augroup,
+        pattern = '*',
+        desc = "Check for Strudel magic marker",
+        callback = function(args)
+          local bufnr = args.buf
+          -- Ensure buffer is valid and still exists
+          if not vim.api.nvim_buf_is_valid(bufnr) then
+            return
+          end
+
+          -- Read the first line of the buffer
+          local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false) -- Get line 0 (the first line)
+
+          if #lines > 0 then
+            -- Trim leading/trailing whitespace for robustness
+            local first_line = vim.trim(lines[1])
+
+            -- Check if the first line matches the magic string
+            if first_line == strudel_magic_string then
+              vim.keymap.set("n", "<C-o>", strudel.launch, { desc = "Launch Strudel" })
+              --vim.keymap.set("n", "<leader>sq", strudel.quit, { desc = "Quit Strudel" })
+              vim.keymap.set("n", "<C-y>", strudel.toggle, { desc = "Strudel Toggle Play/Stop" })
+              --vim.keymap.set("n", "<leader>su", strudel.update, { desc = "Strudel Update" })
+              --vim.keymap.set("n", "<leader>ss", strudel.stop, { desc = "Strudel Stop Playback" })
+              --vim.keymap.set("n", "<leader>sb", strudel.set_buffer, { desc = "Strudel set current buffer" })
+              vim.keymap.set("n", "<C-CR>", strudel.execute, { desc = "Strudel set current buffer and update" })
+            end
+          end
+        end,
+      })
 
 
       -- --------
