@@ -41,6 +41,7 @@ in
       plenary-nvim
       nvim-treesitter.withAllGrammars
       nightfox-nvim
+      gruvbox-nvim
       nvim-web-devicons
 
       # LSP
@@ -369,9 +370,6 @@ in
       -- Strudel
       -- -------
 
-      local strudel = require("strudel")
-      strudel.setup()
-
       -- If a file starts with the magic string on the first line, enable tidal mode
       local strudel_magic_string = "// nvim: enable strudel"
       local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelMagicMarkerSetup', { clear = true })
@@ -395,6 +393,9 @@ in
 
             -- Check if the first line matches the magic string
             if first_line == strudel_magic_string then
+              local strudel = require("strudel")
+              strudel.setup()
+
               vim.keymap.set("n", "<C-o>", strudel.launch, { desc = "Launch Strudel" })
               --vim.keymap.set("n", "<leader>sq", strudel.quit, { desc = "Quit Strudel" })
               vim.keymap.set("n", "<C-y>", strudel.toggle, { desc = "Strudel Toggle Play/Stop" })
