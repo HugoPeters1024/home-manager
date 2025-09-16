@@ -39,12 +39,12 @@ in
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
       plenary-nvim
-      nvim-treesitter.withAllGrammars
       nightfox-nvim
       gruvbox-nvim
       nvim-web-devicons
 
       # LSP
+      nvim-treesitter.withAllGrammars
       mason-nvim
       mason-lspconfig-nvim
       nvim-lspconfig
@@ -73,6 +73,7 @@ in
       tidal-nvim
       nerdtree
       transparent-nvim
+      flatten-nvim
 
       # AI
       windsurf-nvim
@@ -131,6 +132,12 @@ in
       require('transparent').setup()
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
+
+      require("flatten").setup({
+        window = {
+          open = "tab", -- "alternate" or "current" or "vsplit" or "hsplit" or "tab"
+        },
+      })
 
       -- --------
       -- Terminal
