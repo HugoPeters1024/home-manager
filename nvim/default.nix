@@ -121,6 +121,13 @@ in
       vim.keymap.set('n', '<C-k>', '<C-w>k', {noremap=false})
       vim.keymap.set('n', '<C-l>', '<C-w>l', {noremap=true})
 
+      -- ----------------------
+      -- Tab navigation
+      -- ----------------------
+      vim.keymap.set('n', '<S-t>', ':tabnew<CR>', {noremap=true, silent=true})
+      vim.keymap.set('n', '<S-h>', ':tabprevious<CR>', {noremap=true, silent=true})
+      vim.keymap.set('n', '<S-l>', ':tabnext<CR>', {noremap=true, silent=true})
+
       local bufopts = { noremap=true, silent=true }
 
       -- --------------
