@@ -134,7 +134,6 @@ in
       -- Simple plugins
       -- --------------
       require("gitlinker").setup()       -- GBrowse & friends
-      vim.keymap.set('n', 'gb', ':Git blame<CR>', {noremap=true})
 
       require('transparent').setup()
 
@@ -220,9 +219,11 @@ in
 	    local telescope = require('telescope.builtin')
 	    vim.keymap.set('n', 'ff', telescope.find_files, {})
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
-	    vim.keymap.set('n', 'fe', telescope.diagnostics, {})
+      vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
       vim.keymap.set('n', 'fh', telescope.current_buffer_fuzzy_find, {})
+      vim.keymap.set('n', 'fb', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
+      vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'f<space>', telescope.resume, {})
 
       -- ----------------
