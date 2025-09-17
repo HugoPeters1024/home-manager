@@ -21,11 +21,51 @@ let
       };
       type = "nvim-lua";
     };
+  strudel-nvim =
+    {
+      plugin = pkgs.buildNpmPackage rec {
+        pname = "strudel.nvim";
+        version = "unstable-2025-09-17";
+
+        src = pkgs.fetchFromGitHub {
+          owner = "gruvw";
+          repo = "strudel.nvim";
+          rev = "5a8e6db66502f55a988025e7f081c84843021c76";
+          sha256 = "sha256-2n6SL/AUqHEAMNFsxE3UmfSyXUBsE4fnWfg2qsBfjNQ=";
+        };
+
+        npmDepsHash = "sha256-K016bVIMjO3972O67N3os/o3wryMyo5D244RhBNCvkY=";
+
+        # Skip puppeteer's chrome download during build
+        npmFlags = [ "--ignore-scripts" ];
+
+        # Don't run npm install during build, just prepare the package
+        dontNpmBuild = true;
+
+        # Install the plugin files
+        installPhase = ''
+          runHook preInstall
+          mkdir -p $out
+          cp -r * $out/
+          runHook postInstall
+        '';
+
+        meta = with lib; {
+          description = "A strudel.cc Neovim based controller, live coding using Strudel from Neovim";
+          homepage = "https://github.com/gruvw/strudel.nvim";
+          license = licenses.agpl3Only;
+          maintainers = [ ];
+          platforms = platforms.all;
+        };
+      };
+      type = "nvim-lua";
+    };
 in
 {
   home.packages = [
     pkgs.nil
     pkgs.typescript-language-server
+    pkgs.nodejs # Required for strudel.nvim to work
 
     pkgs.ripgrep
     pkgs.font-awesome
@@ -71,6 +111,7 @@ in
       gitlinker-nvim
       toggleterm-nvim
       tidal-nvim
+      strudel-nvim
       nerdtree
       transparent-nvim
       flatten-nvim
@@ -299,6 +340,7 @@ in
       -- --------
       require("avante").setup()
       vim.keymap.set('n', '<C-a>', ':AvanteChat<CR>', {noremap=true, silent=true})
+      vim.keymap.set('v', '<C-a>', ':AvanteEdit<CR>', {noremap=true, silent=true})
       vim.keymap.set('i', '<C-a>', '<ESC>:AvanteChat<CR>', {noremap=true, silent=true})
 
 
@@ -384,6 +426,11 @@ in
       -- -------
       -- Strudel
       -- -------
+      local strudel = require("strudel")
+      strudel.setup({
+        -- Configure to use system Brave
+        browser_exec_path = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+      })
 
       -- If a file starts with the magic string on the first line, enable tidal mode
       local strudel_magic_string = "// nvim: enable strudel"
@@ -408,8 +455,6 @@ in
 
             -- Check if the first line matches the magic string
             if first_line == strudel_magic_string then
-              local strudel = require("strudel")
-              strudel.setup()
 
               vim.keymap.set("n", "<C-o>", strudel.launch, { desc = "Launch Strudel" })
               --vim.keymap.set("n", "<leader>sq", strudel.quit, { desc = "Quit Strudel" })
