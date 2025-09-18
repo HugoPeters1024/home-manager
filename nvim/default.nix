@@ -103,6 +103,7 @@ in
       cmp-path
       cmp-path
 
+      smartyank-nvim
       whitespace-nvim
       telescope-nvim
       telescope-fzf-native-nvim
@@ -175,8 +176,8 @@ in
       -- Simple plugins
       -- --------------
       require("gitlinker").setup()       -- GBrowse & friends
-
       require('transparent').setup()
+      require('smartyank').setup()
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
