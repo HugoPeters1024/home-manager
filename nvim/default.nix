@@ -265,6 +265,7 @@ in
       vim.keymap.set('n', 'fh', telescope.current_buffer_fuzzy_find, {})
       vim.keymap.set('n', 'fb', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
+      vim.keymap.set('n', 'gs', function() telescope.git_status({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'f<space>', telescope.resume, {})
 
       -- ----------------
