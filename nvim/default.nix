@@ -23,7 +23,7 @@ let
     };
   strudel-nvim =
     {
-      plugin = pkgs.buildNpmPackage rec {
+      plugin = pkgs.buildNpmPackage {
         pname = "strudel.nvim";
         version = "unstable-2025-09-17";
 
@@ -434,13 +434,12 @@ in
         browser_exec_path = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
       })
 
-      -- If a file starts with the magic string on the first line, enable tidal mode
-      local strudel_magic_string = "// nvim: enable strudel"
-      local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelMagicMarkerSetup', { clear = true })
-      vim.api.nvim_create_autocmd('FileType', {
+      -- Setup keybindings for Strudel files (*.str extension)
+      local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelFileSetup', { clear = true })
+      vim.api.nvim_create_autocmd('BufRead', {
         group = strudel_marker_augroup,
         pattern = '*',
-        desc = "Check for Strudel magic marker",
+        desc = "Setup Strudel keybindings for .str files",
         callback = function(args)
           local bufnr = args.buf
           -- Ensure buffer is valid and still exists
@@ -448,25 +447,20 @@ in
             return
           end
 
-          -- Read the first line of the buffer
-          local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false) -- Get line 0 (the first line)
-
-          if #lines > 0 then
-            -- Trim leading/trailing whitespace for robustness
-            local first_line = vim.trim(lines[1])
-
-            -- Check if the first line matches the magic string
-            if first_line == strudel_magic_string then
-
-              vim.keymap.set("n", "<C-o>", strudel.launch, { desc = "Launch Strudel" })
-              --vim.keymap.set("n", "<leader>sq", strudel.quit, { desc = "Quit Strudel" })
-              vim.keymap.set("n", "<C-y>", strudel.toggle, { desc = "Strudel Toggle Play/Stop" })
-              --vim.keymap.set("n", "<leader>su", strudel.update, { desc = "Strudel Update" })
-              --vim.keymap.set("n", "<leader>ss", strudel.stop, { desc = "Strudel Stop Playback" })
-              --vim.keymap.set("n", "<leader>sb", strudel.set_buffer, { desc = "Strudel set current buffer" })
-              vim.keymap.set("n", "<C-CR>", strudel.execute, { desc = "Strudel set current buffer and update" })
-            end
+          -- Check if the file actually has .str extension
+          local filename = vim.api.nvim_buf_get_name(bufnr)
+          if not filename:match("%.str$") then
+            return
           end
+
+          vim.keymap.set("n", "<C-0>", strudel.launch, { desc = "Launch Strudel", buffer = bufnr })
+          --vim.keymap.set("n", "<leader>sq", strudel.quit, { desc = "Quit Strudel", buffer = bufnr })
+          vim.keymap.set("n", "<C-y>", strudel.toggle, { desc = "Strudel Toggle Play/Stop", buffer = bufnr })
+          --vim.keymap.set("n", "<leader>su", strudel.update, { desc = "Strudel Update", buffer = bufnr })
+          --vim.keymap.set("n", "<leader>ss", strudel.stop, { desc = "Strudel Stop Playback", buffer = bufnr })
+          --vim.keymap.set("n", "<leader>sb", strudel.set_buffer, { desc = "Strudel set current buffer", buffer = bufnr })
+          vim.keymap.set("n", "<C-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
+          vim.keymap.set("n", "<S-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
         end,
       })
 
