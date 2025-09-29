@@ -82,6 +82,7 @@ in
       nightfox-nvim
       gruvbox-nvim
       nvim-web-devicons
+      overseer-nvim
 
       # LSP
       nvim-treesitter.withAllGrammars
@@ -178,6 +179,7 @@ in
       require("gitlinker").setup()       -- GBrowse & friends
       require('transparent').setup()
       require('smartyank').setup()
+      require('overseer').setup()
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
