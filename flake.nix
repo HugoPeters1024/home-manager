@@ -13,12 +13,6 @@
       # Make HM use the same nixpkgs we defined above
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # NixGL (if you still need it)
-    nixGL = {
-      url = "github:guibou/nixGL";
-      inputs.nixpkgs.follows = "nixpkgs"; # Make nixGL use the same nixpkgs
-    };
   };
 
   # Define outputs (what this flake provides)
@@ -27,7 +21,6 @@
       self,
       nixpkgs,
       home-manager,
-      nixGL,
       ...
     }@inputs:
     let
@@ -43,7 +36,7 @@
       # Define pkgs with overlays (if needed)
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ nixGL.overlay ]; # Remove this line if you don't need nixGL
+        overlays = [ ];
         config = {
           allowUnfree = true;
         }; # Example
