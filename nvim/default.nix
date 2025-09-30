@@ -180,7 +180,9 @@ in
       require("gitlinker").setup()       -- GBrowse & friends
       require('transparent').setup()
       require('smartyank').setup()
+
       require('overseer').setup()
+      vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
