@@ -192,7 +192,7 @@ in
         },
       })
 
-      vim.keymap.set('n', '0', ":OverseerToggle<CR>", bufopts)
+      vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
