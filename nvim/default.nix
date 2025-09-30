@@ -181,8 +181,18 @@ in
       require('transparent').setup()
       require('smartyank').setup()
 
-      require('overseer').setup()
-      vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
+      require("overseer").setup({
+        task_list = {
+          bindings = {
+            ["<C-j>"] = false, -- disable default <C-j>
+            ["<C-k>"] = false, -- disable default <C-k>
+            ["<C-h>"] = false, -- disable default <C-h>
+            ["<C-l>"] = false, -- disable default <C-l>
+          },
+        },
+      })
+
+      vim.keymap.set('n', '0', ":OverseerToggle<CR>", bufopts)
 
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
