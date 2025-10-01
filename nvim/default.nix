@@ -293,16 +293,16 @@ in
       require("mason-lspconfig").setup()
 
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      local lspconfig = require('lspconfig')
-      lspconfig.rust_analyzer.setup {
+      vim.lsp.config("rust_analyzer", {
         capabilities = capabilities,
         -- Server-specific settings. See `:help lspconfig-setup`
         settings = {
           ['rust-analyzer'] = {},
         },
-      }
+      })
+      vim.lsp.enable("rust_analyzer")
 
-      lspconfig.hls.setup {
+      vim.lsp.config("hls", {
         capabilities = capabilities,
         -- Server-specific settings. See `:help lspconfig-setup`
         settings = {
@@ -310,33 +310,38 @@ in
             manageHLS = "PATH"
           },
         },
-      }
+      })
+      vim.lsp.enable("hls")
 
-      lspconfig.pyright.setup {
+      vim.lsp.config("pyright", {
         capabilities = capabilities,
         -- Server-specific settings. See `:help lspconfig-setup`
         settings = {
           ['pyright'] = {
           },
         },
-      }
+      })
+      vim.lsp.enable("pyright")
 
-      lspconfig.ruff.setup {
+      vim.lsp.config("ruff", {
         capabilities = capabilities,
         init_options = {
           settings = {
             -- Server settings should go here
           }
         }
-      }
+      })
+      vim.lsp.enable("ruff")
 
-      lspconfig.nil_ls.setup {
+      vim.lsp.config("nil_ls", {
         capabilities = capabilities,
-      }
+      })
+      vim.lsp.enable("nil_ls")
 
-      lspconfig.ts_ls.setup {
+      vim.lsp.config("ts_ls", {
         capabilities = capabilities,
-      }
+      })
+      vim.lsp.enable("ts_ls")
 
       require("fidget").setup{}
       require("trouble").setup{}
