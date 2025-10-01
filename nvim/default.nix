@@ -140,7 +140,7 @@ in
       vim.o.termguicolors = true
       vim.g.gitblame_enabled = 0
 
-      vim.cmd('colorscheme nightfox')
+      vim.cmd('colorscheme gruvbox')
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
 
