@@ -177,7 +177,17 @@ in
       -- --------------
       -- Simple plugins
       -- --------------
-      require("gitlinker").setup()       -- GBrowse & friends
+      require("gitlinker").setup({
+        opts = {
+          -- Copy URL to clipboard instead of opening in browser (better for SSH)
+          action_callback = require("gitlinker.actions").copy_to_clipboard,
+          -- Print URL to command line as well
+          print_url = true,
+        },
+        callbacks = {
+          ["git.groq.io"] = require"gitlinker.hosts".get_gitlab_type_url,
+        },
+      })       -- GBrowse & friends
       require('transparent').setup()
       require('smartyank').setup()
 
@@ -194,6 +204,10 @@ in
 
       vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
+
+      -- Git URL copying (works over SSH with smartyank)
+      vim.keymap.set('n', 'gy', '<cmd>lua require("gitlinker").get_buf_range_url("n")<cr>', { silent = true, desc = "Copy git URL to clipboard" })
+      vim.keymap.set('v', 'gy', '<cmd>lua require("gitlinker").get_buf_range_url("v")<cr>', { silent = true, desc = "Copy git URL with line range to clipboard" })
 
       require("flatten").setup({
         window = {
@@ -288,8 +302,8 @@ in
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
-      vim.keymap.set('n', 'fh', function() telescope.command_history({ initial_mode = 'normal' }) end, {})
-      vim.keymap.set('n', 'fb', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
+      vim.keymap.set('n', 'fh', function() telescope.command_history({ initial_mode = 'insert' }) end, {})
+      vim.keymap.set('n', 'fb', function() telescope.git_branches({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'gs', function() telescope.git_status({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'f<space>', telescope.resume, {})
