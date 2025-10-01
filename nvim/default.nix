@@ -333,15 +333,14 @@ in
       })
       vim.lsp.enable("ruff")
 
-      vim.lsp.config("nil_ls", {
-        capabilities = capabilities,
-      })
+      vim.lsp.config("nil_ls", { capabilities = capabilities, })
       vim.lsp.enable("nil_ls")
 
-      vim.lsp.config("ts_ls", {
-        capabilities = capabilities,
-      })
+      vim.lsp.config("ts_ls", { capabilities = capabilities, })
       vim.lsp.enable("ts_ls")
+
+      vim.lsp.config("clangd", { capabilities = capabilities, })
+      vim.lsp.enable("clangd")
 
       require("fidget").setup{}
       require("trouble").setup{}
