@@ -102,7 +102,6 @@ in
       cmp-nvim-lsp
       cmp-buffer
       cmp-path
-      cmp-path
 
       smartyank-nvim
       whitespace-nvim
@@ -126,6 +125,7 @@ in
       -- --------------
       -- Basic settings
       -- --------------
+      vim.opt.wrap = false
       vim.opt.cursorline = true
       vim.opt.cursorlineopt = "number"
       vim.opt.tabstop = 2
@@ -193,7 +193,6 @@ in
       })
 
       vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
-
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
       require("flatten").setup({
@@ -230,10 +229,21 @@ in
         virtual_text = {
           -- source = "always",  -- Or "if_many"
           prefix = '●', -- Could be '■', '▎', 'x'
+          format = function(diagnostic)
+            -- Wrap long messages
+            local message = diagnostic.message
+            if #message > 80 then
+              return message:sub(1, 77) .. "..."
+            end
+            return message
+          end,
         },
         severity_sort = true,
         float = {
           source = "always",  -- Or "if_many"
+          wrap = true,
+          max_width = 80,
+          border = "rounded",
         },
       })
 
@@ -344,7 +354,7 @@ in
 
       require("fidget").setup{}
       require("trouble").setup{}
-      require('nvim-treesitter.configs').setup { highlight = { enable = true }, ... }
+      require('nvim-treesitter.configs').setup { highlight = { enable = true } }
 
       vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
       vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
@@ -354,6 +364,7 @@ in
       vim.keymap.set('n', 'gr', function() telescope.lsp_references({ initial_mode = 'normal'}) end, bufopts)
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
+      vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, bufopts)
       vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
 
       -- --------
