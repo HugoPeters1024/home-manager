@@ -29,6 +29,8 @@
 
       # use direnv
       eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
+
+      source ${config.home.homeDirectory}/.config/zsh/.zshextra.env
     '';
 
     initContent = ''
