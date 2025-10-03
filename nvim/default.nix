@@ -81,6 +81,7 @@ in
       plenary-nvim
       nightfox-nvim
       gruvbox-nvim
+      gruvbox-material-nvim
       nvim-web-devicons
       overseer-nvim
 
@@ -140,7 +141,7 @@ in
       vim.o.termguicolors = true
       vim.g.gitblame_enabled = 0
 
-      vim.cmd('colorscheme gruvbox')
+      vim.cmd('colorscheme gruvbox-material')
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
 
