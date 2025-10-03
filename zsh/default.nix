@@ -31,6 +31,15 @@
       eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
 
       source ${config.home.homeDirectory}/.config/zsh/.zshextra.env
+
+      # Auto-attach to tmux session when connected over SSH
+      if [[ -n $SSH_CONNECTION || -n $SSH_TTY || -n $SSH_CLIENT ]] && [[ -z $TMUX ]]; then
+        # Check if tmux is available
+        if command -v tmux >/dev/null 2>&1; then
+          # Try to attach to existing session or create new one
+          tmux attach-session -t main 2>/dev/null || tmux new-session -s main
+        fi
+      fi
     '';
 
     initContent = ''
