@@ -216,7 +216,7 @@ in
         },
       })
 
-      vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
+      vim.keymap.set('n', '<leader>t', ":OverseerToggle<CR>", bufopts)
       vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', bufopts)
 
       -- Git URL copying (works over SSH with smartyank)
@@ -414,6 +414,9 @@ in
       -- --------
       require("avante").setup({
         provider = "claude",
+        behaviour = {
+          auto_set_keymaps = false, -- Disable automatic keymaps to avoid conflicts
+        },
         providers = {
           claude = {
             endpoint = "https://api.anthropic.com",
@@ -426,9 +429,9 @@ in
           },
         },
       })
-      vim.keymap.set('n', '<C-a>', ':AvanteChat<CR>', {noremap=true, silent=true})
-      vim.keymap.set('v', '<C-a>', ':AvanteEdit<CR>', {noremap=true, silent=true})
-      vim.keymap.set('i', '<C-a>', '<ESC>:AvanteChat<CR>', {noremap=true, silent=true})
+      -- Set only the keymaps you want
+      vim.keymap.set('n', '<leader>a', ':AvanteToggle<CR>', {noremap=true, silent=true, desc="Avante: Toggle"})
+      vim.keymap.set('v', '<C-a>', ':AvanteEdit<CR>', {noremap=true, silent=true, desc="Avante: Edit"})
 
       -- ------------------
       -- LSP Autocompletion
