@@ -118,7 +118,7 @@ in
       toggleterm-nvim
       tidal-nvim
       strudel-nvim
-      nerdtree
+      neo-tree-nvim
       transparent-nvim
       flatten-nvim
       leap-nvim
@@ -217,7 +217,7 @@ in
       })
 
       vim.keymap.set('n', '9', ":OverseerToggle<CR>", bufopts)
-      vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
+      vim.keymap.set('n', '<leader>e', ':Neotree toggle<CR>', bufopts)
 
       -- Git URL copying (works over SSH with smartyank)
       vim.keymap.set({'n', 'x', 'v'}, 'gy', '<cmd>lua require("gitlinker").get_buf_range_url("n")<cr><ESC>', { silent = true, desc = "Copy git URL to clipboard" })
@@ -225,6 +225,22 @@ in
       require("flatten").setup({
         window = {
           open = "tab", -- "alternate" or "current" or "vsplit" or "hsplit" or "tab"
+        },
+      })
+
+      -- ---------------
+      -- Neotree
+      -- ---------------
+      require("neo-tree").setup({
+        window = {
+          mappings = {
+            ["f"] = "none", -- Disable 'f' to allow 'ff' for telescope
+          },
+        },
+        filesystem = {
+          follow_current_file = {
+            enabled = true
+          },
         },
       })
 
