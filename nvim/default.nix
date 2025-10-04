@@ -60,6 +60,7 @@ let
       };
       type = "nvim-lua";
     };
+  avante-nvim = pkgs.callPackage ./avante.nix {};
 in
 {
   home.packages = [
@@ -395,7 +396,20 @@ in
       -- --------
       -- AI
       -- --------
-      require("avante").setup()
+      require("avante").setup({
+        provider = "claude",
+        providers = {
+          claude = {
+            endpoint = "https://api.anthropic.com",
+            model = "claude-sonnet-4-5-20250929",
+            timeout = 30000,
+            extra_request_body = {
+              temperature = 0.75,
+              max_tokens = 64000,
+            },
+          },
+        },
+      })
       vim.keymap.set('n', '<C-a>', ':AvanteChat<CR>', {noremap=true, silent=true})
       vim.keymap.set('v', '<C-a>', ':AvanteEdit<CR>', {noremap=true, silent=true})
       vim.keymap.set('i', '<C-a>', '<ESC>:AvanteChat<CR>', {noremap=true, silent=true})
