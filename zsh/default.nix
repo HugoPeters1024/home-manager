@@ -9,7 +9,7 @@
     autocd = true;
     dotDir = "${config.home.homeDirectory}/.config/zsh";
     enableCompletion = true;
-    history.size = 100000;
+    history.size = 1000000;
     oh-my-zsh = {
       enable = true;
       plugins = [
