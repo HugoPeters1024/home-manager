@@ -83,6 +83,8 @@ in
       nightfox-nvim
       nvim-web-devicons
       overseer-nvim
+      diffview-nvim
+      neogit
 
       # Colorschemes
       gruvbox-nvim
@@ -227,6 +229,18 @@ in
           open = "tab", -- "alternate" or "current" or "vsplit" or "hsplit" or "tab"
         },
       })
+
+      -- ---------------
+      -- Neogit
+      -- ---------------
+      require("neogit").setup({
+        integrations = {
+          diffview = true,
+        }
+      })
+
+      vim.keymap.set('n', '<leader>gg', ":Neogit<CR>", bufopts)
+      vim.keymap.set('n', '<leader>gd', ":DiffviewOpen<CR>", bufopts)
 
       -- ---------------
       -- Neotree
