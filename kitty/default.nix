@@ -9,7 +9,7 @@
     enable = true;
     font = {
       name = "JetBrainsMono Nerd Font Mono";
-      size = 16;
+      size = 14;
     };
 
     extraConfig = ''
