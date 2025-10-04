@@ -80,10 +80,13 @@ in
     plugins = with pkgs.vimPlugins; [
       plenary-nvim
       nightfox-nvim
-      gruvbox-nvim
-      gruvbox-material-nvim
       nvim-web-devicons
       overseer-nvim
+
+      # Colorschemes
+      gruvbox-nvim
+      gruvbox-material-nvim
+      everforest
 
       # LSP
       nvim-treesitter.withAllGrammars
@@ -117,6 +120,7 @@ in
       nerdtree
       transparent-nvim
       flatten-nvim
+      leap-nvim
 
       # AI
       avante-nvim
@@ -175,6 +179,12 @@ in
 
       local bufopts = { noremap=true, silent=true }
 
+      -- ----------------------
+      -- Easy leaping within a buffer
+      -- ----------------------
+      vim.keymap.set({'n', 'x', 'o'}, 's', '<Plug>(leap)')
+      vim.keymap.set('n',             'S', '<Plug>(leap-from-window)')
+
       -- --------------
       -- Simple plugins
       -- --------------
@@ -190,7 +200,9 @@ in
         },
       })       -- GBrowse & friends
       require('transparent').setup()
-      require('smartyank').setup()
+      require('smartyank').setup({
+        highlight = { timeout = 200 }
+      })
 
       require("overseer").setup({
         task_list = {
@@ -207,8 +219,7 @@ in
       vim.keymap.set('n', '<F1>', ':NERDTreeToggle<CR>', bufopts)
 
       -- Git URL copying (works over SSH with smartyank)
-      vim.keymap.set('n', 'gy', '<cmd>lua require("gitlinker").get_buf_range_url("n")<cr>', { silent = true, desc = "Copy git URL to clipboard" })
-      vim.keymap.set('v', 'gy', '<cmd>lua require("gitlinker").get_buf_range_url("v")<cr>', { silent = true, desc = "Copy git URL with line range to clipboard" })
+      vim.keymap.set({'n', 'x', 'v'}, 'gy', '<cmd>lua require("gitlinker").get_buf_range_url("n")<cr><ESC>', { silent = true, desc = "Copy git URL to clipboard" })
 
       require("flatten").setup({
         window = {
@@ -375,7 +386,6 @@ in
       vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
       vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
       vim.keymap.set('n', 'go', vim.lsp.buf.type_definition, bufopts)
-      vim.keymap.set('n', 'gr', telescope.lsp_references, bufopts)
       vim.keymap.set('n', 'gr', function() telescope.lsp_references({ initial_mode = 'normal'}) end, bufopts)
       vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
       vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
