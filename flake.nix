@@ -80,13 +80,28 @@
             ./nvim/default.nix
             ./zsh/default.nix
             ./kitty/default.nix
+            ./wezterm/default.nix
             {
-              home.packages = [ m1pkgs.home-manager ];
+              home.packages = [
+                m1pkgs.home-manager
+                m1pkgs.wezterm
+                m1pkgs.nerd-fonts.jetbrains-mono
+              ];
               home.username = "hpeters";
               home.homeDirectory = "/Users/hpeters";
               home.sessionVariables = {
                 EDITOR = "nvim";
-                TERMINAL = "kitty";
+                TERMINAL = "wezterm";
+                SHELL = "/bin/zsh";
+              };
+
+              # Set the default shell to /bin/zsh
+              programs.bash.enable = false;
+              programs.zsh.enable = true;
+              programs.zsh.shellAliases = {
+                ll = "ls -la";
+                la = "ls -A";
+                l = "ls -CF";
               };
 
               # This value determines the Home Manager release that your configuration is
@@ -106,13 +121,28 @@
           modules = [
             ./nvim/default.nix
             ./zsh/default.nix
+            ./wezterm/default.nix
             {
-              home.packages = [ pkgs.home-manager ];
+              home.packages = [
+                pkgs.home-manager
+                pkgs.wezterm
+                pkgs.nerd-fonts.jetbrains-mono
+              ];
               home.username = "hpeters";
               home.homeDirectory = "/home/hpeters";
               home.sessionVariables = {
                 EDITOR = "nvim";
-                TERMINAL = "kitty";
+                TERMINAL = "wezterm";
+                SHELL = "/bin/zsh";
+              };
+
+              # Set the default shell to /bin/zsh
+              programs.bash.enable = false;
+              programs.zsh.enable = true;
+              programs.zsh.shellAliases = {
+                ll = "ls -la";
+                la = "ls -A";
+                l = "ls -CF";
               };
 
               # This value determines the Home Manager release that your configuration is
