@@ -32,6 +32,10 @@
 
       source ${config.home.homeDirectory}/.config/zsh/.zshextra.env
 
+      # Ensure vim and vi are aliased to nvim for all terminals
+      alias vim='nvim'
+      alias vi='nvim'
+
       # Auto-attach to tmux session when connected over SSH
       if [[ -n $SSH_CONNECTION || -n $SSH_TTY || -n $SSH_CLIENT ]] && [[ -z $TMUX ]]; then
         # Check if tmux is available
