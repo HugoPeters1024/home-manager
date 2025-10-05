@@ -121,11 +121,9 @@
           modules = [
             ./nvim/default.nix
             ./zsh/default.nix
-            ./wezterm/default.nix
             {
               home.packages = [
                 pkgs.home-manager
-                pkgs.wezterm
                 pkgs.nerd-fonts.jetbrains-mono
               ];
               home.username = "hpeters";
