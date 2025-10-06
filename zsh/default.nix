@@ -41,7 +41,7 @@
         # Check if tmux is available
         if command -v tmux >/dev/null 2>&1; then
           # Try to attach to existing session or create new one
-          tmux attach-session -t main 2>/dev/null || tmux new-session -s main
+          tmux attach-session -t main 2>/dev/null || tmux new-session -s tmux
         fi
       fi
     '';

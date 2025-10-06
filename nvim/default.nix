@@ -123,7 +123,6 @@ in
       neo-tree-nvim
       transparent-nvim
       flatten-nvim
-      leap-nvim
 
       # AI
       avante-nvim
@@ -181,12 +180,6 @@ in
       vim.keymap.set('n', '<S-l>', ':tabnext<CR>', {noremap=true, silent=true})
 
       local bufopts = { noremap=true, silent=true }
-
-      -- ----------------------
-      -- Easy leaping within a buffer
-      -- ----------------------
-      vim.keymap.set({'n', 'x', 'o'}, 's', '<Plug>(leap)')
-      vim.keymap.set('n',             'S', '<Plug>(leap-from-window)')
 
       -- --------------
       -- Simple plugins
