@@ -223,34 +223,6 @@ in
         },
       })
 
-      -- ---------------
-      -- Neogit
-      -- ---------------
-      require("neogit").setup({
-        integrations = {
-          diffview = true,
-        }
-      })
-
-      vim.keymap.set('n', '<leader>gg', ":Neogit<CR>", bufopts)
-      vim.keymap.set('n', '<leader>gd', ":DiffviewOpen<CR>", bufopts)
-
-      -- ---------------
-      -- Neotree
-      -- ---------------
-      require("neo-tree").setup({
-        window = {
-          mappings = {
-            ["f"] = "none", -- Disable 'f' to allow 'ff' for telescope
-          },
-        },
-        filesystem = {
-          follow_current_file = {
-            enabled = true
-          },
-        },
-      })
-
       -- --------
       -- Terminal
       -- --------
@@ -339,10 +311,39 @@ in
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
       vim.keymap.set('n', 'fh', function() telescope.command_history({ initial_mode = 'insert' }) end, {})
-      vim.keymap.set('n', 'fb', function() telescope.git_branches({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'gs', function() telescope.git_status({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'f<space>', telescope.resume, {})
+
+      -- ---------------
+      -- Neogit
+      -- ---------------
+      require("neogit").setup({
+        integrations = {
+          diffview = true,
+        }
+      })
+
+      vim.keymap.set('n', '<leader>gg', ":Neogit<CR>", bufopts)
+      vim.keymap.set('n', '<leader>gd', ":DiffviewOpen<CR>", bufopts)
+      vim.keymap.set('n', '<leader>gb', function() telescope.git_branches({ initial_mode = 'normal'}) end, {})
+
+      -- ---------------
+      -- Neotree
+      -- ---------------
+      require("neo-tree").setup({
+        window = {
+          mappings = {
+            ["f"] = "none", -- Disable 'f' to allow 'ff' for telescope
+          },
+        },
+        filesystem = {
+          follow_current_file = {
+            enabled = true
+          },
+        },
+      })
+
 
       -- ----------------
       -- LSP
