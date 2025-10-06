@@ -150,7 +150,8 @@ in
       vim.o.termguicolors = true
       vim.g.gitblame_enabled = 0
 
-      vim.cmd('colorscheme gruvbox-material')
+      vim.g.everforest_background = "hard"
+      vim.cmd('colorscheme everforest')
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
 
