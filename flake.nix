@@ -85,6 +85,7 @@
               home.packages = [
                 m1pkgs.home-manager
                 m1pkgs.wezterm
+                m1pkgs.bottom
                 m1pkgs.nerd-fonts.jetbrains-mono
               ];
               home.username = "hpeters";

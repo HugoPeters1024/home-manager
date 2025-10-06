@@ -126,6 +126,9 @@ in
 
       # AI
       avante-nvim
+
+      # Status line
+      lualine-nvim
     ];
 
     extraLuaConfig = /* lua */ ''
@@ -150,6 +153,49 @@ in
       vim.cmd('colorscheme gruvbox-material')
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
+
+      -- --------------
+      -- Status line
+      -- --------------
+      require('lualine').setup({
+        options = {
+          theme = 'gruvbox-material',
+          component_separators = { left = "", right = ""},
+          section_separators = { left = "", right = ""},
+          disabled_filetypes = {
+            statusline = {},
+            winbar = {}
+          },
+          ignore_focus = {},
+          always_divide_middle = true,
+          globalstatus = false,
+          refresh = {
+            statusline = 1000,
+            tabline = 1000,
+            winbar = 1000,
+          }
+        },
+        sections = {
+          lualine_a = {'mode'},
+          lualine_b = {'branch', 'diagnostics'},
+          lualine_c = {'filename'},
+          lualine_x = {'encoding', 'fileformat', 'filetype'},
+          lualine_y = {},
+          lualine_z = {}
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = {'filename'},
+          lualine_x = {'location'},
+          lualine_y = {},
+          lualine_z = {}
+        },
+        tabline = {},
+        winbar = {},
+        inactive_winbar = {},
+        extensions = {}
+      })
 
       -- Use gj/gk for j/k when no count is provided (visual line movement)
       -- Otherwise, use regular j/k (logical line movement)
