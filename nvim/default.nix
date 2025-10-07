@@ -95,6 +95,7 @@ in
       overseer-nvim
       diffview-nvim
       neogit
+      noice-nvim
 
       # Colorschemes
       gruvbox-nvim
@@ -164,7 +165,8 @@ in
       vim.g.gitblame_enabled = 0
 
       vim.g.everforest_background = "hard"
-      vim.cmd('colorscheme everforest')
+      vim.cmd('colorscheme gruvbox')
+
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
 
@@ -288,6 +290,49 @@ in
       -- --------------
       require("confirm-quit").setup({
         quit_message = "Are you sure you want to quit nvim?"
+      })
+
+      -- -------------
+      -- Noice
+      -- -------------
+
+      require("noice").setup({
+        lsp = {
+          progress = {
+            enabled = false,
+          },
+          -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+          override = {
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+          },
+        },
+        -- you can enable a preset for easier configuration
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = false, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          inc_rename = false, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = true, -- add a border to hover docs and signature help
+        },
+        cmdline = {
+          view = "cmdline_popup",
+        },
+        views = {
+          cmdline_popup = {
+            position = {
+              row = "50%",
+              col = "50%",
+            },
+          },
+          confirm = {
+            position = {
+              row = "50%",
+              col = "50%",
+            },
+          },
+        },
       })
 
       -- --------
