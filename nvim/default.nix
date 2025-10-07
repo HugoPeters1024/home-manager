@@ -61,16 +61,6 @@ let
       type = "nvim-lua";
     };
   avante-nvim = pkgs.callPackage ./avante.nix {};
-  confirm-quit-nvim =
-    {
-      plugin = pkgs.fetchFromGitHub {
-        owner = "yutkat";
-        repo = "confirm-quit.nvim";
-        rev = "a1dbd9b553e8d6770cd6a879a3ee8ffad292c70c";
-        sha256 = "sha256-EGwSPxHCZaHWeeN8M+d3UXOor9ME7R6skpkcENVENRw=";
-      };
-      type = "nvim-lua";
-    };
 in
 {
   home.packages = [
@@ -137,9 +127,6 @@ in
 
       # AI
       avante-nvim
-
-      # Quit confirmation
-      confirm-quit-nvim
 
       # Status line
       lualine-nvim
@@ -244,6 +231,13 @@ in
       local bufopts = { noremap=true, silent=true }
 
       -- --------------
+      -- Custom Commands
+      -- --------------
+      vim.api.nvim_create_user_command('Bake', function(opts)
+        vim.cmd('tabnew | read!bake ' .. opts.args)
+      end, { nargs = '*', complete = 'shellcmd' })
+
+      -- --------------
       -- Simple plugins
       -- --------------
       require("gitlinker").setup({
@@ -283,13 +277,6 @@ in
         window = {
           open = "tab", -- "alternate" or "current" or "vsplit" or "hsplit" or "tab"
         },
-      })
-
-      -- --------------
-      -- Confirm Quit
-      -- --------------
-      require("confirm-quit").setup({
-        quit_message = "Are you sure you want to quit nvim?"
       })
 
       -- -------------
