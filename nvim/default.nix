@@ -234,14 +234,24 @@ in
       -- Custom Commands
       -- --------------
       vim.api.nvim_create_user_command('Bake', function(opts)
-        local command = 'bake ' .. opts.args
-        vim.cmd('tabnew')
-        vim.cmd('read!' .. command)
-        vim.cmd('file ' .. vim.fn.shellescape(command))
-        vim.bo.buftype = 'nofile'
-        vim.bo.bufhidden = 'wipe'
-        vim.bo.modifiable = false
-        vim.bo.readonly = true
+        local args = vim.split(opts.args, '%s+')
+        local first_arg = args[1] or ""
+
+        if first_arg == 'test' then
+          -- Use Overseer for test commands
+          local command = 'bake ' .. opts.args
+          vim.cmd('OverseerRunCmd ' .. vim.fn.shellescape(command))
+        else
+          -- Use regular tab with output for other commands
+          local command = 'bake ' .. opts.args
+          vim.cmd('tabnew')
+          vim.cmd('read!' .. command)
+          vim.cmd('file ' .. vim.fn.shellescape(command))
+          vim.bo.buftype = 'nofile'
+          vim.bo.bufhidden = 'wipe'
+          vim.bo.modifiable = false
+          vim.bo.readonly = true
+        end
       end, { nargs = '*', complete = 'shellcmd' })
 
       -- --------------
