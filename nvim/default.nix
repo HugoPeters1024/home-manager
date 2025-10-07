@@ -240,7 +240,7 @@ in
         if first_arg == 'test' then
           -- Use Overseer for test commands
           local command = 'bake ' .. opts.args
-          vim.cmd('OverseerRunCmd ' .. vim.fn.shellescape(command))
+          vim.cmd('OverseerRunCmd ' .. command)
         else
           -- Use regular tab with output for other commands
           local command = 'bake ' .. opts.args
