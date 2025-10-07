@@ -322,13 +322,13 @@ in
         views = {
           cmdline_popup = {
             position = {
-              row = "50%",
+              row = "80%",
               col = "50%",
             },
           },
           confirm = {
             position = {
-              row = "50%",
+              row = "80%",
               col = "50%",
             },
           },
