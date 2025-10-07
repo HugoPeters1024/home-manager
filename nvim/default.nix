@@ -234,7 +234,14 @@ in
       -- Custom Commands
       -- --------------
       vim.api.nvim_create_user_command('Bake', function(opts)
-        vim.cmd('tabnew | read!bake ' .. opts.args)
+        local command = 'bake ' .. opts.args
+        vim.cmd('tabnew')
+        vim.cmd('read!' .. command)
+        vim.cmd('file ' .. vim.fn.shellescape(command))
+        vim.bo.buftype = 'nofile'
+        vim.bo.bufhidden = 'wipe'
+        vim.bo.modifiable = false
+        vim.bo.readonly = true
       end, { nargs = '*', complete = 'shellcmd' })
 
       -- --------------
