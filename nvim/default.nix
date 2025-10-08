@@ -328,6 +328,10 @@ in
         cmdline = {
           view = "cmdline_popup",
         },
+        messages = {
+          -- Disable search count hover (e.g., "abc 3/6")
+          view_search = false,
+        },
         views = {
           cmdline_popup = {
             position = {
