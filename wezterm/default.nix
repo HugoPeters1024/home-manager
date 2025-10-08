@@ -36,7 +36,7 @@
       })
 
       config.font_size = 14.0
-      config.line_height = 1.1
+      config.line_height = 1.05
       config.font_rules = {
         -- Thin font settings
         {
@@ -83,7 +83,7 @@
       local function get_process_icon(process_name)
         local icons = {
           ["zsh"] = "🐚",
-          ["bash"] = "🐚", 
+          ["bash"] = "🐚",
           ["fish"] = "🐟",
           ["vim"] = "📝",
           ["nvim"] = "📝",
@@ -113,28 +113,28 @@
           ["curl"] = "🌐",
           ["wget"] = "🌐",
         }
-        
+
         for process, icon in pairs(icons) do
           if string.find(process_name:lower(), process) then
             return icon
           end
         end
-        
+
         return "💻"
       end
 
       wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
         local background = tab.is_active and "#3c3836" or "#1d2021"
         local foreground = tab.is_active and "#ebdbb2" or "#928374"
-        
+
         local text = tab_title(tab)
         local icon = get_process_icon(tab.active_pane.foreground_process_name)
-        
+
         -- Truncate text if too long
         if #text > 15 then
           text = string.sub(text, 1, 12) .. "..."
         end
-        
+
         return {
           { Background = { Color = background } },
           { Foreground = { Color = foreground } },
@@ -358,15 +358,15 @@
         -- The active tab title max length
         active_titlebar_bg = "#1d2021",
         inactive_titlebar_bg = "#1d2021",
-        
+
         -- Window frame colors
         border_left_width = "0px",
-        border_right_width = "0px", 
+        border_right_width = "0px",
         border_bottom_height = "0px",
         border_top_height = "0px",
         border_left_color = "#1d2021",
         border_right_color = "#1d2021",
-        border_bottom_color = "#1d2021", 
+        border_bottom_color = "#1d2021",
         border_top_color = "#1d2021",
       }
 

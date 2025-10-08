@@ -242,15 +242,10 @@ in
           local command = 'bake ' .. opts.args
           vim.cmd('OverseerRunCmd ' .. command)
         else
-          -- Use regular tab with output for other commands
+          -- Use terminal instead of read for other commands
           local command = 'bake ' .. opts.args
           vim.cmd('tabnew')
-          vim.cmd('read!' .. command)
-          vim.cmd('file ' .. vim.fn.shellescape(command))
-          vim.bo.buftype = 'nofile'
-          vim.bo.bufhidden = 'wipe'
-          vim.bo.modifiable = false
-          vim.bo.readonly = true
+          vim.cmd('terminal ' .. command)
         end
       end, { nargs = '*', complete = 'shellcmd' })
 
