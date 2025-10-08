@@ -277,6 +277,16 @@ in
             ["<C-l>"] = false, -- disable default <C-l>
           },
         },
+        -- Override default component alias to remove automatic disposal
+        component_aliases = {
+          default = {
+            { "display_duration", detail_level = 2 },
+            "on_output_summarize",
+            "on_exit_set_status",
+            "on_complete_notify",
+            -- Removed "on_complete_dispose" to prevent automatic task disposal
+          },
+        },
       })
 
       vim.keymap.set('n', '<leader>t', ":OverseerToggle<CR>", bufopts)
