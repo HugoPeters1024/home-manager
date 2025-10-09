@@ -249,6 +249,20 @@ in
         end
       end, { nargs = '*', complete = 'shellcmd' })
 
+      vim.api.nvim_create_user_command('BakeBench', function(opts)
+        local args = vim.split(opts.args, '%s+')
+        local instances = args[1] or "20"
+        local test = args[2] or ""
+
+        if test == "" then
+          vim.notify('BakeBench requires two arguments: instances and test name', vim.log.levels.ERROR)
+          return
+        end
+
+        local command = '.buildkite/bin/flake/run-test-batch ' .. instances .. ' ' .. test
+        vim.cmd('OverseerRunCmd ' .. command)
+      end, { nargs = '*', complete = 'shellcmd' })
+
       -- --------------
       -- Simple plugins
       -- --------------
