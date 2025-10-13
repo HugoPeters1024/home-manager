@@ -259,7 +259,7 @@ in
           return
         end
 
-        local command = '.buildkite/bin/flake/run-test-batch ' .. instances .. ' ' .. test
+        local command = '.buildkite/bin/flake-run-test-batch ' .. instances .. ' ' .. test
         vim.cmd('OverseerRunCmd ' .. command)
       end, { nargs = '*', complete = 'shellcmd' })
 
