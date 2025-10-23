@@ -35,8 +35,8 @@
         'monospace',
       })
 
-      config.font_size = 14.0
-      config.line_height = 1.05
+      config.font_size = 13.0
+      config.line_height = 1.07
       config.font_rules = {
         -- Thin font settings
         {
@@ -147,7 +147,7 @@
       config.cursor_thickness = 0.8
 
       -- Scrollback configuration
-      config.scrollback_lines = 10000
+      config.scrollback_lines = 100000
 
       -- Bell configuration - completely disabled
       config.audible_bell = "Disabled"

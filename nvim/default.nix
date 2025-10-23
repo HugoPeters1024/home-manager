@@ -237,8 +237,8 @@ in
         local args = vim.split(opts.args, '%s+')
         local first_arg = args[1] or ""
 
-        if first_arg == 'test' then
-          -- Use Overseer for test commands
+        if first_arg == 'test' or first_arg == 'run' then
+          -- Use Overseer for test and run commands
           local command = 'bake ' .. opts.args
           vim.cmd('OverseerRunCmd ' .. command)
         else
