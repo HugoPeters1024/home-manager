@@ -68,6 +68,7 @@ in
     pkgs.nodejs # Required for strudel.nvim to work
 
     pkgs.ripgrep
+    pkgs.fd # Fast file finder for Telescope
     pkgs.font-awesome
     pkgs.nerd-fonts.jetbrains-mono
   ];
@@ -442,9 +443,120 @@ in
       -- ---------
       -- Telescope
       -- ---------
+      require('telescope').setup({
+        defaults = {
+          -- Performance optimizations for large monorepos
+          file_ignore_patterns = {
+            "node_modules",
+            ".git/",
+            "%.lock",
+            "%.png",
+            "%.jpg",
+            "%.jpeg",
+            "%.gif",
+            "%.webp",
+            "%.svg",
+            "%.ico",
+            "%.pdf",
+            "%.zip",
+            "%.tar.gz",
+            "%.DS_Store",
+            "__pycache__",
+            "%.pyc",
+            "%.o",
+            "%.a",
+            "%.so",
+            "%.dylib",
+            "target/",        -- Rust build artifacts
+            "build/",         -- Common build directory
+            "dist/",          -- Common dist directory
+            "%.egg%-info/",   -- Python egg info
+            "%.tox/",         -- Python tox
+            ".venv/",         -- Python venv
+            "venv/",          -- Python venv
+          },
+          -- Use better sorting algorithm
+          sorting_strategy = "ascending",
+          layout_config = {
+            prompt_position = "top",
+            width = 0.95,
+            height = 0.95,
+          },
+          -- Performance: only show first N results initially
+          cache_picker = {
+            num_pickers = 10,
+          },
+          -- Faster file preview
+          preview = {
+            timeout = 200,
+            filesize_limit = 1, -- MB
+          },
+          -- Better performance with many results
+          scroll_strategy = "limit",
+        },
+        pickers = {
+          find_files = {
+            -- Use fd for faster file finding with optimizations
+            find_command = {
+              "${pkgs.fd}/bin/fd",
+              "--type", "f",
+              "--hidden",
+              "--follow",
+              "--no-ignore-vcs",
+              "--exclude", ".git",
+              "--exclude", "node_modules",
+              "--exclude", "target",
+              "--exclude", "build",
+              "--exclude", "dist",
+              "--exclude", ".venv",
+              "--exclude", "venv",
+              "--strip-cwd-prefix",
+              "--max-results", "10000",  -- Limit results for performance
+            },
+            initial_mode = "insert",
+          },
+          live_grep = {
+            -- Use ripgrep with optimized flags
+            additional_args = function()
+              return {
+                "--hidden",
+                "--follow",
+                "--max-filesize", "1M",  -- Skip large files
+                "--glob", "!.git/*",
+                "--glob", "!node_modules/*",
+                "--glob", "!target/*",
+                "--glob", "!build/*",
+                "--glob", "!dist/*",
+                "--glob", "!*.lock",
+              }
+            end,
+            -- Debounce live_grep for better performance
+            debounce = 100,
+          },
+          git_files = {
+            -- Use git ls-files for faster searching in git repos
+            show_untracked = false,
+          },
+        },
+        extensions = {
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+          }
+        }
+      })
+
       require('telescope').load_extension('fzf')
 	    local telescope = require('telescope.builtin')
-	    vim.keymap.set('n', 'ff', telescope.find_files, {})
+	    -- Use git_files when in a git repo (much faster), fallback to find_files
+	    vim.keymap.set('n', 'ff', function()
+        local ok = pcall(telescope.git_files, {})
+        if not ok then
+          telescope.find_files()
+        end
+      end, { desc = "Find files (git-aware)" })
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
@@ -452,6 +564,8 @@ in
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'gs', function() telescope.git_status({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'f<space>', telescope.resume, {})
+      -- Fallback to fd-based find_files if needed
+      vim.keymap.set('n', 'fF', telescope.find_files, { desc = "Find all files (non-git)" })
 
       -- ---------------
       -- Neogit
