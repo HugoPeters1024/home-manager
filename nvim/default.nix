@@ -475,13 +475,6 @@ in
             ".venv/",         -- Python venv
             "venv/",          -- Python venv
           },
-          -- Use better sorting algorithm
-          sorting_strategy = "ascending",
-          layout_config = {
-            prompt_position = "top",
-            width = 0.95,
-            height = 0.95,
-          },
           -- Performance: only show first N results initially
           cache_picker = {
             num_pickers = 10,
@@ -550,13 +543,7 @@ in
 
       require('telescope').load_extension('fzf')
 	    local telescope = require('telescope.builtin')
-	    -- Use git_files when in a git repo (much faster), fallback to find_files
-	    vim.keymap.set('n', 'ff', function()
-        local ok = pcall(telescope.git_files, {})
-        if not ok then
-          telescope.find_files()
-        end
-      end, { desc = "Find files (git-aware)" })
+      vim.keymap.set('n', 'ff', telescope.find_files, {})
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
@@ -564,8 +551,6 @@ in
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'gs', function() telescope.git_status({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'f<space>', telescope.resume, {})
-      -- Fallback to fd-based find_files if needed
-      vim.keymap.set('n', 'fF', telescope.find_files, { desc = "Find all files (non-git)" })
 
       -- ---------------
       -- Neogit
