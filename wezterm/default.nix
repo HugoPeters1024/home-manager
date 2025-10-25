@@ -35,7 +35,7 @@
         'monospace',
       })
 
-      config.font_size = 13.0
+      config.font_size = 12.0
       config.line_height = 1.07
       config.font_rules = {
         -- Thin font settings

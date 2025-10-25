@@ -60,7 +60,6 @@ let
       };
       type = "nvim-lua";
     };
-  avante-nvim = pkgs.callPackage ./avante.nix {};
 in
 {
   home.packages = [
