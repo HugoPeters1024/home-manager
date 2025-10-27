@@ -526,24 +526,6 @@ in
             },
             initial_mode = "insert",
           },
-          live_grep = {
-            -- Use ripgrep with optimized flags
-            additional_args = function()
-              return {
-                "--hidden",
-                "--follow",
-                "--max-filesize", "1M",  -- Skip large files
-                "--glob", "!.git/*",
-                "--glob", "!node_modules/*",
-                "--glob", "!target/*",
-                "--glob", "!build/*",
-                "--glob", "!dist/*",
-                "--glob", "!*.lock",
-              }
-            end,
-            -- Debounce live_grep for better performance
-            debounce = 100,
-          },
           git_files = {
             -- Use git ls-files for faster searching in git repos
             show_untracked = false,
