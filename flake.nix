@@ -79,6 +79,7 @@
           modules = [
             ./nvim/default.nix
             ./zsh/default.nix
+            ./tmux/default.nix
             ./kitty/default.nix
             ./wezterm/default.nix
             {
