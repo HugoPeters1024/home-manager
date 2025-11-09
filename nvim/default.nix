@@ -215,7 +215,7 @@ in
         local args = vim.split(opts.args, '%s+')
         local first_arg = args[1] or ""
 
-        if first_arg == 'test' or first_arg == 'run' then
+        if first_arg == 'test' or first_arg == 'run' or first_arg == 'build' then
           -- Use Overseer for test and run commands
           local command = 'bake ' .. opts.args
           vim.cmd('OverseerRunCmd ' .. command)
@@ -540,7 +540,14 @@ in
       })
 
       vim.keymap.set('n', '<leader>gg', ":Neogit<CR>", bufopts)
-      vim.keymap.set('n', '<leader>gd', ":DiffviewOpen<CR>", bufopts)
+      vim.keymap.set('n', '<leader>gd', function()
+        local view = require('diffview.lib').get_current_view()
+        if view then
+          vim.cmd('DiffviewClose')
+        else
+          vim.cmd('DiffviewOpen')
+        end
+      end, bufopts)
       vim.keymap.set('n', '<leader>gb', function() telescope.git_branches({ initial_mode = 'normal'}) end, {})
 
       -- ---------------
@@ -563,9 +570,7 @@ in
       -- ----------------
       -- LSP
       -- ----------------
-      require('mason').setup({
-        PATH = "append",
-      })
+      require('mason').setup({ PATH = "append" })
       require("mason-lspconfig").setup()
 
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
