@@ -254,7 +254,7 @@ in
         local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
         local selected_text = table.concat(lines, "\n")
 
-        local command = 'terminal bake log --follow ' .. selected_text
+        local command = 'Bake log --follow ' .. selected_text
         vim.cmd(command)
       end, { desc = "Open selection with Bake log --follow" })
 
