@@ -215,13 +215,16 @@ in
         local args = vim.split(opts.args, '%s+')
         local first_arg = args[1] or ""
 
+        -- Expand % to current buffer filepath
+        local expanded_args = opts.args:gsub('%%', vim.fn.expand('%'))
+
         if first_arg == 'test' or first_arg == 'run' or first_arg == 'build' then
           -- Use Overseer for test and run commands
-          local command = 'bake ' .. opts.args
+          local command = 'bake ' .. expanded_args
           vim.cmd('OverseerRunCmd ' .. command)
         else
           -- Use terminal instead of read for other commands
-          local command = 'bake ' .. opts.args
+          local command = 'bake ' .. expanded_args
           vim.cmd('tabnew')
           vim.cmd('terminal ' .. command)
         end
