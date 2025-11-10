@@ -244,6 +244,20 @@ in
         vim.cmd('OverseerRunCmd ' .. command)
       end, { nargs = '*', complete = 'shellcmd' })
 
+      -- open selection using 'Bake log --follow ...'
+      vim.keymap.set('x', 'FF', function()
+        local start_pos = vim.fn.getpos("'<")
+        local end_pos = vim.fn.getpos("'>")
+        local start_line = start_pos[2]
+        local end_line = end_pos[2]
+
+        local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+        local selected_text = table.concat(lines, "\n")
+
+        local command = 'terminal bake log --follow ' .. selected_text
+        vim.cmd(command)
+      end, { desc = "Open selection with Bake log --follow" })
+
       -- --------------
       -- Simple plugins
       -- --------------
