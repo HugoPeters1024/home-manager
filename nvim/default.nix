@@ -127,10 +127,12 @@ in
       vim.opt.smarttab = true
       vim.opt.signcolumn = "yes"
       vim.o.termguicolors = true
+      vim.o.scrollback = 100000
       vim.g.gitblame_enabled = 0
 
       vim.g.everforest_background = "hard"
       vim.cmd('colorscheme gruvbox')
+
 
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
@@ -218,7 +220,7 @@ in
         -- Expand % to current buffer filepath
         local expanded_args = opts.args:gsub('%%', vim.fn.expand('%'))
 
-        if first_arg == 'test' or first_arg == 'run' or first_arg == 'build' then
+        if vim.tbl_contains({'test', 'run', 'run-on', 'build'}, first_arg) then
           -- Use Overseer for test and run commands
           local command = 'bake ' .. expanded_args
           vim.cmd('OverseerRunCmd ' .. command)
@@ -485,32 +487,6 @@ in
           },
           -- Better performance with many results
           scroll_strategy = "limit",
-        },
-        pickers = {
-          find_files = {
-            -- Use fd for faster file finding with optimizations
-            find_command = {
-              "${pkgs.fd}/bin/fd",
-              "--type", "f",
-              "--hidden",
-              "--follow",
-              "--no-ignore-vcs",
-              "--exclude", ".git",
-              "--exclude", "node_modules",
-              "--exclude", "target",
-              "--exclude", "build",
-              "--exclude", "dist",
-              "--exclude", ".venv",
-              "--exclude", "venv",
-              "--strip-cwd-prefix",
-              "--max-results", "10000",  -- Limit results for performance
-            },
-            initial_mode = "insert",
-          },
-          git_files = {
-            -- Use git ls-files for faster searching in git repos
-            show_untracked = false,
-          },
         },
         extensions = {
           fzf = {
