@@ -10,8 +10,8 @@ let
         src = pkgs.fetchFromGitHub {
           owner = "gruvw";
           repo = "strudel.nvim";
-          rev = "5a8e6db66502f55a988025e7f081c84843021c76";
-          sha256 = "sha256-2n6SL/AUqHEAMNFsxE3UmfSyXUBsE4fnWfg2qsBfjNQ=";
+          rev = "3b83511d08f3b79bb7d6beb0d6f27fd375638604";
+          sha256 = "sha256-86TlGElsIdpWZT3yUy7W7LoBeBqEgGHCm9nKuo/8zLo=";
         };
 
         npmDepsHash = "sha256-K016bVIMjO3972O67N3os/o3wryMyo5D244RhBNCvkY=";
