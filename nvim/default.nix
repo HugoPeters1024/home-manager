@@ -223,7 +223,7 @@ in
         if vim.tbl_contains({'test', 'run', 'run-on', 'build'}, first_arg) then
           -- Use Overseer for test and run commands
           local command = 'bake ' .. expanded_args
-          vim.cmd('OverseerRunCmd ' .. command)
+          vim.cmd('OverseerShell ' .. command)
         else
           -- Use terminal instead of read for other commands
           local command = 'bake ' .. expanded_args
@@ -243,7 +243,7 @@ in
         end
 
         local command = '.buildkite/bin/flake-run-test-batch ' .. instances .. ' ' .. test
-        vim.cmd('OverseerRunCmd ' .. command)
+        vim.cmd('OverseerShell ' .. command)
       end, { nargs = '*', complete = 'shellcmd' })
 
       -- --------------
@@ -267,7 +267,7 @@ in
 
       require("overseer").setup({
         task_list = {
-          bindings = {
+          keymaps = {
             ["<C-j>"] = false, -- disable default <C-j>
             ["<C-k>"] = false, -- disable default <C-k>
             ["<C-h>"] = false, -- disable default <C-h>
