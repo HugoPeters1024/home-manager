@@ -220,7 +220,7 @@ in
         -- Expand % to current buffer filepath
         local expanded_args = opts.args:gsub('%%', vim.fn.expand('%'))
 
-        if vim.tbl_contains({'test', 'run', 'run-on', 'build'}, first_arg) then
+        if vim.tbl_contains({'test', 'r', 'run', 'run-on', 'build'}, first_arg) then
           -- Use Overseer for test and run commands
           local command = 'bake ' .. expanded_args
           vim.cmd('OverseerShell ' .. command)
