@@ -128,6 +128,7 @@ in
       vim.opt.signcolumn = "yes"
       vim.o.termguicolors = true
       vim.o.scrollback = 100000
+      vim.o.history = 10000
       vim.g.gitblame_enabled = 0
 
       vim.g.everforest_background = "hard"
