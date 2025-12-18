@@ -487,6 +487,13 @@ in
           -- Better performance with many results
           scroll_strategy = "limit",
         },
+        pickers = {
+          command_history = {
+            -- Use fuzzy_with_index_bias to maintain chronological order
+            -- This sorter considers when items were added, perfect for command history
+            sorter = require('telescope.sorters').fuzzy_with_index_bias(),
+          },
+        },
         extensions = {
           fzf = {
             fuzzy = true,
@@ -503,7 +510,9 @@ in
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
-      vim.keymap.set('n', 'fh', function() telescope.command_history({ initial_mode = 'insert' }) end, {})
+      vim.keymap.set('n', 'fh', function() 
+        telescope.command_history({ initial_mode = 'insert' }) 
+      end, {})
       vim.keymap.set('n', 'fc', function() telescope.commands ({ initial_mode = 'insert' }) end, {})
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
       vim.keymap.set('n', 'gs', function() telescope.git_status({ initial_mode = 'normal'}) end, {})
