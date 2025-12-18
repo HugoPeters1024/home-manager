@@ -506,7 +506,16 @@ in
 
       require('telescope').load_extension('fzf')
 	    local telescope = require('telescope.builtin')
-      vim.keymap.set('n', 'ff', telescope.find_files, {})
+      -- Smart file finder: use git_files in git repos (much faster in monorepos),
+      -- fallback to find_files if not in a git repo
+      vim.keymap.set('n', 'ff', function()
+        local ok, _ = pcall(telescope.git_files, { show_untracked = true })
+        if not ok then
+          telescope.find_files()
+        end
+      end, { desc = "Find files (git-aware)" })
+      -- Keep find_files available for searching all files including untracked
+      vim.keymap.set('n', 'fF', telescope.find_files, { desc = "Find all files" })
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
