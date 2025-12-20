@@ -617,7 +617,10 @@ in
       vim.lsp.config("ts_ls", { capabilities = capabilities, })
       vim.lsp.enable("ts_ls")
 
-      vim.lsp.config("clangd", { capabilities = capabilities, })
+      vim.lsp.config("clangd", {
+        capabilities = capabilities,
+        cmd = { "clangd", "-j=8", "--malloc-trim", "--background-index", "--pch-storage=memory" },
+      })
       vim.lsp.enable("clangd")
 
       require("fidget").setup{}
