@@ -228,6 +228,9 @@ in
         else
           -- Use terminal instead of read for other commands
           local command = 'bake ' .. expanded_args
+          if first_arg == 'log' then
+            command = 'brake ' .. expanded_args
+          end
           vim.cmd('tabnew')
           vim.cmd('terminal ' .. command)
         end
