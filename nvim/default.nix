@@ -362,6 +362,15 @@ in
               col = "50%",
             },
           },
+          notify = {
+            position = {
+              row = "50%",
+              col = "50%",
+            },
+            size = {
+              width = nil,  -- Fit content width
+            },
+          },
         },
       })
 
@@ -406,7 +415,7 @@ in
         float = {
           source = "always",  -- Or "if_many"
           wrap = true,
-          max_width = 80,
+          max_width = nil,  -- No width limit, will fit text content
           border = "rounded",
         },
       })
@@ -522,8 +531,8 @@ in
 	    vim.keymap.set('n', 'fg', telescope.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
 	    vim.keymap.set('n', 'fd', telescope.commands, {})
-      vim.keymap.set('n', 'fh', function() 
-        telescope.command_history({ initial_mode = 'insert' }) 
+      vim.keymap.set('n', 'fh', function()
+        telescope.command_history({ initial_mode = 'insert' })
       end, {})
       vim.keymap.set('n', 'fc', function() telescope.commands ({ initial_mode = 'insert' }) end, {})
       vim.keymap.set('n', 'fs', function() telescope.buffers({ initial_mode = 'normal'}) end, {})
