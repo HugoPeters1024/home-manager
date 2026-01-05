@@ -236,6 +236,14 @@ in
         end
       end, { nargs = '*', complete = 'shellcmd' })
 
+      vim.api.nvim_create_user_command('Cargo', function(opts)
+        local args = vim.split(opts.args, '%s+')
+
+        local expanded_args = opts.args:gsub('%%', vim.fn.expand('%'))
+        local command = 'cargo ' .. expanded_args
+        vim.cmd('OverseerShell ' .. command)
+      end, { nargs = '*', complete = 'shellcmd' })
+
       vim.api.nvim_create_user_command('BakeBench', function(opts)
         local args = vim.split(opts.args, '%s+')
         local instances = args[1] or "20"
