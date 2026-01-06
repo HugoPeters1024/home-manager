@@ -643,6 +643,14 @@ in
       })
       vim.lsp.enable("clangd")
 
+
+      vim.lsp.config("jdtls", {
+        capabilities = capabilities,
+        -- cmd = { "jdtls", "--java-executable", "/Users/hpeters/repos/maxelerTesting/maxj-javac" },
+        cmd = { "/Users/hpeters/repos/eclipse.platform.releng.aggregator/jdtls.sh" },
+      });
+      vim.lsp.enable("jdtls")
+
       require("fidget").setup{}
       require("trouble").setup{}
       require('nvim-treesitter.configs').setup { highlight = { enable = true } }

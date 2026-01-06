@@ -1,4 +1,23 @@
-# How to use
+# My Home Manager Setup
+
+The only thing you need beforehand is nix itself. The very first time you will have to run
+
+```sh
+nix develop
+```
+
+to drop into a nix shell with home-manager installed. Then run
+
+```sh
+home-manager switch
+```
+
+to install all applications and apply the configurations you have defined. This will also install home-manager itself system wide,
+so next time you don't even have to run `nix develop` anymore.
+
+
+
+# Old personal notes from when I still used linux, pls ignore
 
 first follow the basic home manager instructions, which including adding its nix channel
 
