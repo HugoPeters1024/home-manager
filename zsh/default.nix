@@ -30,20 +30,9 @@
       # use direnv
       eval "$(${pkgs.direnv}/bin/direnv hook zsh)"
 
-      source ${config.home.homeDirectory}/.config/zsh/.zshextra.env
-
       # Ensure vim and vi are aliased to nvim for all terminals
       alias vim='nvim'
       alias vi='nvim'
-
-      # Auto-attach to tmux session when connected over SSH
-      if [[ -n $SSH_CONNECTION || -n $SSH_TTY || -n $SSH_CLIENT ]] && [[ -z $TMUX ]]; then
-        # Check if tmux is available
-        if command -v tmux >/dev/null 2>&1; then
-          # Try to attach to existing session or create new one
-          tmux attach-session -t tmux 2>/dev/null || tmux new-session -s tmux
-        fi
-      fi
     '';
 
     initContent = ''

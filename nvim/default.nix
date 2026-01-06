@@ -1,52 +1,7 @@
 { pkgs, lib, ...}:
-
-let
-  strudel-nvim =
-    {
-      plugin = pkgs.buildNpmPackage {
-        pname = "strudel.nvim";
-        version = "unstable-2025-09-17";
-
-        src = pkgs.fetchFromGitHub {
-          owner = "gruvw";
-          repo = "strudel.nvim";
-          rev = "3b83511d08f3b79bb7d6beb0d6f27fd375638604";
-          sha256 = "sha256-86TlGElsIdpWZT3yUy7W7LoBeBqEgGHCm9nKuo/8zLo=";
-        };
-
-        npmDepsHash = "sha256-K016bVIMjO3972O67N3os/o3wryMyo5D244RhBNCvkY=";
-
-        # Skip puppeteer's chrome download during build
-        npmFlags = [ "--ignore-scripts" ];
-
-        # Don't run npm install during build, just prepare the package
-        dontNpmBuild = true;
-
-        # Install the plugin files
-        installPhase = ''
-          runHook preInstall
-          mkdir -p $out
-          cp -r * $out/
-          runHook postInstall
-        '';
-
-        meta = with lib; {
-          description = "A strudel.cc Neovim based controller, live coding using Strudel from Neovim";
-          homepage = "https://github.com/gruvw/strudel.nvim";
-          license = licenses.agpl3Only;
-          maintainers = [ ];
-          platforms = platforms.all;
-        };
-      };
-      type = "nvim-lua";
-    };
-in
 {
   home.packages = [
     pkgs.nil
-    pkgs.typescript-language-server
-    pkgs.nodejs # Required for strudel.nvim to work
-
     pkgs.ripgrep
     pkgs.fd # Fast file finder for Telescope
     pkgs.font-awesome
@@ -98,7 +53,6 @@ in
       emmet-vim
       gitlinker-nvim
       toggleterm-nvim
-      strudel-nvim
       neo-tree-nvim
       transparent-nvim
       flatten-nvim
@@ -724,45 +678,6 @@ in
           { name = 'buffer' },
         },
       }
-
-      -- -------
-      -- Strudel
-      -- -------
-      local strudel = require("strudel")
-      strudel.setup({
-        -- Configure to use system Brave
-        browser_exec_path = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
-      })
-
-      -- Setup keybindings for Strudel files (*.str extension)
-      local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelFileSetup', { clear = true })
-      vim.api.nvim_create_autocmd('BufRead', {
-        group = strudel_marker_augroup,
-        pattern = '*',
-        desc = "Setup Strudel keybindings for .str files",
-        callback = function(args)
-          local bufnr = args.buf
-          -- Ensure buffer is valid and still exists
-          if not vim.api.nvim_buf_is_valid(bufnr) then
-            return
-          end
-
-          -- Check if the file actually has .str extension
-          local filename = vim.api.nvim_buf_get_name(bufnr)
-          if not filename:match("%.str$") then
-            return
-          end
-
-          vim.keymap.set("n", "<C-0>", strudel.launch, { desc = "Launch Strudel", buffer = bufnr })
-          --vim.keymap.set("n", "<leader>sq", strudel.quit, { desc = "Quit Strudel", buffer = bufnr })
-          vim.keymap.set("n", "<C-y>", strudel.toggle, { desc = "Strudel Toggle Play/Stop", buffer = bufnr })
-          --vim.keymap.set("n", "<leader>su", strudel.update, { desc = "Strudel Update", buffer = bufnr })
-          --vim.keymap.set("n", "<leader>ss", strudel.stop, { desc = "Strudel Stop Playback", buffer = bufnr })
-          --vim.keymap.set("n", "<leader>sb", strudel.set_buffer, { desc = "Strudel set current buffer", buffer = bufnr })
-          vim.keymap.set("n", "<C-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
-          vim.keymap.set("n", "<S-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
-        end,
-      })
     '';
   };
 }
