@@ -74,7 +74,7 @@
           ];
         };
 
-        "hpeters@Mac" = home-manager.lib.homeManagerConfiguration {
+        "hugop@JT7RVG63RY" = home-manager.lib.homeManagerConfiguration {
           pkgs = m1pkgs;
           modules = [
             ./nvim/default.nix
@@ -88,9 +88,10 @@
                 m1pkgs.wezterm
                 m1pkgs.bottom
                 m1pkgs.nerd-fonts.jetbrains-mono
+                m1pkgs.direnv
               ];
-              home.username = "hpeters";
-              home.homeDirectory = "/Users/hpeters";
+              home.username = "hugop";
+              home.homeDirectory = "/Users/hugop";
               home.sessionVariables = {
                 EDITOR = "nvim";
                 TERMINAL = "wezterm";

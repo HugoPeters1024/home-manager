@@ -118,7 +118,7 @@ in
 
   programs.git = {
     enable = true;
-    userEmail = "hugopeters1024@gmail.com";
+    userEmail = "hpeters1024@gmail.com";
     userName = "HugoPeters1024";
   };
 }
