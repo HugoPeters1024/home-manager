@@ -646,8 +646,7 @@ in
 
       vim.lsp.config("jdtls", {
         capabilities = capabilities,
-        -- cmd = { "jdtls", "--java-executable", "/Users/hpeters/repos/maxelerTesting/maxj-javac" },
-        cmd = { "/Users/hpeters/repos/eclipse.platform.releng.aggregator/jdtls.sh" },
+        cmd = { "jdtls" },
       });
       vim.lsp.enable("jdtls")
 

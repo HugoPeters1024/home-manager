@@ -55,6 +55,9 @@
       config.window_decorations = "TITLE | RESIZE"
       config.window_background_opacity = 1.0
       config.text_background_opacity = 1.0
+      -- Set initial window size to be much larger
+      config.initial_cols = 160
+      config.initial_rows = 50
       config.window_padding = {
         left = 8,
         right = 8,

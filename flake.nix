@@ -89,6 +89,8 @@
                 m1pkgs.bottom
                 m1pkgs.nerd-fonts.jetbrains-mono
                 m1pkgs.direnv
+                m1pkgs.nix-output-monitor
+                m1pkgs.tree
               ];
               home.username = "hugop";
               home.homeDirectory = "/Users/hugop";
@@ -105,6 +107,14 @@
                 ll = "ls -la";
                 la = "ls -A";
                 l = "ls -CF";
+              };
+
+              programs.git = {
+                enable = true;
+                settings = {
+                  user.email = "hugop@nvidia.com";
+                  user.name = "HugoPeters1024";
+                };
               };
 
               # This value determines the Home Manager release that your configuration is
