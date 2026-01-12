@@ -134,7 +134,13 @@ in
       vim.g.everforest_background = "hard"
       vim.cmd('colorscheme gruvbox')
 
-
+      -- Treat .maxj files as Java files
+      vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+        pattern = "*.maxj",
+        callback = function()
+          vim.bo.filetype = "java"
+        end,
+      })
 
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
 

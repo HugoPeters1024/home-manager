@@ -91,6 +91,7 @@
                 m1pkgs.direnv
                 m1pkgs.nix-output-monitor
                 m1pkgs.tree
+                m1pkgs.nix-tree
               ];
               home.username = "hugop";
               home.homeDirectory = "/Users/hugop";
