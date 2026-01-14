@@ -7,10 +7,10 @@
 let
   colossusEnabled = config.programs.colossus.enable or false;
   colossusCompletionInit = lib.optionalString colossusEnabled ''
-    # Colossus CLI completion setup
+    # Colossus CLI completion setup (pre-generated)
     autoload -Uz bashcompinit
     bashcompinit
-    eval "$(register-python-argcomplete colossus)"
+    source ${config.programs.colossus.completionScript}
   '';
 in
 {

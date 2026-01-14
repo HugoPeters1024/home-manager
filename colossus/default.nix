@@ -42,6 +42,13 @@ let
     ps.pyyaml
     ps.tqdm
   ]);
+
+  # Pre-generate the argcomplete script at build time
+  colossusCompletion = pkgs.runCommand "colossus-completion" {
+    nativeBuildInputs = [ pythonWithColossus ];
+  } ''
+    register-python-argcomplete colossus > $out
+  '';
 in
 {
   options.programs.colossus = {
@@ -51,6 +58,13 @@ in
       type = lib.types.package;
       default = pythonWithColossus;
       description = "The colossus package to use (includes Python with colossus-cli and argcomplete)";
+    };
+
+    completionScript = lib.mkOption {
+      type = lib.types.path;
+      default = colossusCompletion;
+      description = "Pre-generated argcomplete script for colossus";
+      readOnly = true;
     };
   };
 
