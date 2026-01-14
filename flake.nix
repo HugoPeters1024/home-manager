@@ -82,7 +82,10 @@
             ./tmux/default.nix
             ./kitty/default.nix
             ./wezterm/default.nix
+            ./colossus/default.nix
             {
+              programs.colossus.enable = true;
+
               home.packages = [
                 m1pkgs.home-manager
                 m1pkgs.wezterm

@@ -1,8 +1,18 @@
 {
   pkgs,
+  lib,
   config,
   ...
 }:
+let
+  colossusEnabled = config.programs.colossus.enable or false;
+  colossusCompletionInit = lib.optionalString colossusEnabled ''
+    # Colossus CLI completion setup
+    autoload -Uz bashcompinit
+    bashcompinit
+    eval "$(register-python-argcomplete colossus)"
+  '';
+in
 {
   programs.zsh = {
     enable = true;
@@ -51,6 +61,8 @@
       if [[ -n $SSH_CONNECTION || -n $SSH_TTY || -n $SSH_CLIENT ]]; then
         PROMPT="%K{red}%F{white} REMOTE %f%k $PROMPT"
       fi
+
+      ${colossusCompletionInit}
     '';
   };
 
