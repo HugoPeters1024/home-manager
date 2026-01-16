@@ -95,6 +95,9 @@
                 m1pkgs.nix-output-monitor
                 m1pkgs.tree
                 m1pkgs.nix-tree
+                m1pkgs.nix-direnv
+                m1pkgs.vscode
+                m1pkgs.google-cloud-sdk
               ];
               home.username = "hugop";
               home.homeDirectory = "/Users/hugop";
