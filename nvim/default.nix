@@ -658,7 +658,30 @@ in
 
       require("fidget").setup{}
       require("trouble").setup{}
-      require('nvim-treesitter.configs').setup { highlight = { enable = true } }
+
+      -- Treesitter: just configure the install directory
+      -- Queries and parsers are already provided by nixpkgs
+      require('nvim-treesitter.config').setup {}
+      
+      -- Enable treesitter highlighting for buffers with available parsers
+      -- In Neovim 0.10+, this needs to be explicitly started
+      vim.api.nvim_create_autocmd({'FileType', 'BufEnter'}, {
+        callback = function(args)
+          local buf = args.buf
+          local ft = vim.bo[buf].filetype
+          
+          -- Skip if already active or no filetype
+          if vim.treesitter.highlighter.active[buf] or ft == "" then
+            return
+          end
+          
+          -- Only start if a parser is available for this filetype
+          local lang = vim.treesitter.language.get_lang(ft) or ft
+          if pcall(vim.treesitter.language.add, lang) then
+            pcall(vim.treesitter.start, buf)
+          end
+        end,
+      })
 
       vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
       vim.keymap.set('n', 'qr', vim.lsp.buf.format, bufopts)
