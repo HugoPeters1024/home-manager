@@ -85,6 +85,7 @@
             ./colossus/default.nix
             {
               programs.colossus.enable = true;
+              programs.zsh.sshAgentPlugin.enable = true;
 
               home.packages = [
                 m1pkgs.home-manager
@@ -137,24 +138,24 @@
         };
 
         "hugop_nvidia_com@devvm-hugop" = home-manager.lib.homeManagerConfiguration {
-          pkgs = m1pkgs;
+          pkgs = pkgs;
           modules = [
             ./nvim/default.nix
             ./zsh/default.nix
             ./tmux/default.nix
-            ./kitty/default.nix
             ./wezterm/default.nix
             {
-              home.packages = [
-                m1pkgs.home-manager
-                m1pkgs.wezterm
-                m1pkgs.bottom
-                m1pkgs.nerd-fonts.jetbrains-mono
-                m1pkgs.direnv
-                m1pkgs.nix-output-monitor
-                m1pkgs.tree
-                m1pkgs.nix-tree
-                m1pkgs.nix-direnv
+              home.packages = with pkgs; [
+                home-manager
+                wezterm
+                bottom
+                nerd-fonts.jetbrains-mono
+                direnv
+                nix-output-monitor
+                tree
+                nix-tree
+                nix-direnv
+                cursor-cli
               ];
               home.username = "hugop_nvidia_com";
               home.homeDirectory = "/home/hugop_nvidia_com";

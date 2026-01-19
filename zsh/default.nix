@@ -12,9 +12,21 @@ let
     bashcompinit
     source ${config.programs.colossus.completionScript}
   '';
+  sshAgentEnabled = config.programs.zsh.sshAgentPlugin.enable or false;
+  basePlugins = [
+    "git"
+    "history-substring-search"
+  ];
+  plugins = if sshAgentEnabled then basePlugins ++ [ "ssh-agent" ] else basePlugins;
 in
 {
-  programs.zsh = {
+  options.programs.zsh.sshAgentPlugin.enable = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = "Whether to enable the oh-my-zsh ssh-agent plugin";
+  };
+
+  config.programs.zsh = {
     enable = true;
     autocd = true;
     dotDir = "${config.home.homeDirectory}/.config/zsh";
@@ -22,11 +34,7 @@ in
     history.size = 1000000;
     oh-my-zsh = {
       enable = true;
-      plugins = [
-        "git"
-        "history-substring-search"
-        "ssh-agent"
-      ];
+      plugins = plugins;
       theme = "agnoster";
       custom = "$HOME/.oh-my-custom";
     };
@@ -66,12 +74,12 @@ in
     '';
   };
 
-  programs.direnv = {
+  config.programs.direnv = {
     enable = true;
   };
 
   # Enables fuzzy history search
-  programs.fzf = {
+  config.programs.fzf = {
     enable = true;
     historyWidgetOptions = [ "--layout=reverse" ];
   };
