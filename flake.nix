@@ -136,6 +136,63 @@
           ];
         };
 
+        "hugop_nvidia_com@devvm-hugop" = home-manager.lib.homeManagerConfiguration {
+          pkgs = m1pkgs;
+          modules = [
+            ./nvim/default.nix
+            ./zsh/default.nix
+            ./tmux/default.nix
+            ./kitty/default.nix
+            ./wezterm/default.nix
+            {
+              home.packages = [
+                m1pkgs.home-manager
+                m1pkgs.wezterm
+                m1pkgs.bottom
+                m1pkgs.nerd-fonts.jetbrains-mono
+                m1pkgs.direnv
+                m1pkgs.nix-output-monitor
+                m1pkgs.tree
+                m1pkgs.nix-tree
+                m1pkgs.nix-direnv
+              ];
+              home.username = "hugop_nvidia_com";
+              home.homeDirectory = "/home/hugop_nvidia_com";
+              home.sessionVariables = {
+                EDITOR = "nvim";
+                TERMINAL = "wezterm";
+                SHELL = "/bin/zsh";
+              };
+
+              # Set the default shell to /bin/zsh
+              programs.bash.enable = false;
+              programs.zsh.enable = true;
+              programs.zsh.shellAliases = {
+                ll = "ls -la";
+                la = "ls -A";
+                l = "ls -CF";
+              };
+
+              programs.git = {
+                enable = true;
+                settings = {
+                  user.email = "hugop@nvidia.com";
+                  user.name = "HugoPeters1024";
+                };
+              };
+
+              # This value determines the Home Manager release that your configuration is
+              # compatible with. This helps avoid breakage when a new Home Manager release
+              # introduces backwards incompatible changes.
+              #
+              # You should not change this value, even if you update Home Manager. If you do
+              # want to update the value, then make sure to first check the Home Manager
+              # release notes.
+              home.stateVersion = "24.11"; # Please read the comment before changing.
+            }
+          ];
+        };
+
         "hpeters@hpeters" = home-manager.lib.homeManagerConfiguration {
           pkgs = pkgs;
           modules = [
