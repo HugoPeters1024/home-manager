@@ -61,6 +61,7 @@ in
     pkgs.nil
     pkgs.swaybg
     pkgs.qpwgraph
+    (pkgs.python3.withPackages (ps: [ ps.numpy ]))
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
