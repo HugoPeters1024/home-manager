@@ -144,7 +144,7 @@
             ./zsh/default.nix
             ./tmux/default.nix
             ./wezterm/default.nix
-            {
+            ({ config, ... }: {
               home.packages = with pkgs; [
                 home-manager
                 wezterm
@@ -159,6 +159,13 @@
               ];
               home.username = "hugop_nvidia_com";
               home.homeDirectory = "/home/hugop_nvidia_com";
+
+              # Add ~/.local/bin to PATH
+              home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
+
+              # Symlink for haskell-language-server-wrapper pointing to globally installed HLS
+              home.file.".local/bin/haskell-language-server-wrapper".source =
+                config.lib.file.mkOutOfStoreSymlink "/nix/var/nix/profiles/default/bin/haskell-language-server";
               home.sessionVariables = {
                 EDITOR = "nvim";
                 TERMINAL = "wezterm";
@@ -190,7 +197,7 @@
               # want to update the value, then make sure to first check the Home Manager
               # release notes.
               home.stateVersion = "24.11"; # Please read the comment before changing.
-            }
+            })
           ];
         };
 
