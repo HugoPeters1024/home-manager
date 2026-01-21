@@ -23,11 +23,16 @@
     # Use vi mode keys
     keyMode = "vi";
 
+    # Plugins
+    plugins = with pkgs.tmuxPlugins; [
+      vim-tmux-navigator
+    ];
+
     extraConfig = ''
       # Pane base index
       set -g pane-base-index 0
 
-      # Change pane selection -- keep arrows also functional
+      # Change pane selection with prefix -- keep arrows also functional
       bind -r k select-pane -U
       bind -r j select-pane -D
       bind -r h select-pane -L

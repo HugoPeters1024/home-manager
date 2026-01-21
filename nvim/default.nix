@@ -102,6 +102,7 @@ in
       neo-tree-nvim
       transparent-nvim
       flatten-nvim
+      vim-tmux-navigator
 
       # AI
       avante-nvim
@@ -201,12 +202,14 @@ in
       end, { expr = true, silent = true, noremap = true, desc = "Move up visual line (gk) if no count" })
 
       -- ----------------------
-      -- Easy buffer navigation
+      -- Easy buffer navigation (vim-tmux-navigator handles this)
       -- ----------------------
-      vim.keymap.set('n', '<C-h>', '<C-w>h', {noremap=true})
-      vim.keymap.set('n', '<C-j>', '<C-w>j', {noremap=true})
-      vim.keymap.set('n', '<C-k>', '<C-w>k', {noremap=false})
-      vim.keymap.set('n', '<C-l>', '<C-w>l', {noremap=true})
+      -- vim-tmux-navigator provides seamless navigation between vim splits and tmux panes
+      -- using Ctrl+h/j/k/l. The plugin handles the keymaps automatically.
+      -- vim.keymap.set('n', '<C-h>', '<C-w>h', {noremap=true})
+      -- vim.keymap.set('n', '<C-j>', '<C-w>j', {noremap=true})
+      -- vim.keymap.set('n', '<C-k>', '<C-w>k', {noremap=false})
+      -- vim.keymap.set('n', '<C-l>', '<C-w>l', {noremap=true})
 
       -- ----------------------
       -- Tab navigation
@@ -662,19 +665,19 @@ in
       -- Treesitter: just configure the install directory
       -- Queries and parsers are already provided by nixpkgs
       require('nvim-treesitter.config').setup {}
-      
+
       -- Enable treesitter highlighting for buffers with available parsers
       -- In Neovim 0.10+, this needs to be explicitly started
       vim.api.nvim_create_autocmd({'FileType', 'BufEnter'}, {
         callback = function(args)
           local buf = args.buf
           local ft = vim.bo[buf].filetype
-          
+
           -- Skip if already active or no filetype
           if vim.treesitter.highlighter.active[buf] or ft == "" then
             return
           end
-          
+
           -- Only start if a parser is available for this filetype
           local lang = vim.treesitter.language.get_lang(ft) or ft
           if pcall(vim.treesitter.language.add, lang) then
