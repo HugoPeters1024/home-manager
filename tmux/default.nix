@@ -7,12 +7,12 @@
 {
   programs.tmux = {
     enable = true;
-    terminal = "screen-256color";
+    terminal = "xterm-256color";
     historyLimit = 50000000;
     clock24 = true;
 
     # Change prefix from C-b to C-f
-    # prefix = "C-f";
+    prefix = "C-f";
 
     # Enable mouse support
     mouse = true;
@@ -35,16 +35,22 @@
       # Change pane selection with prefix -- keep arrows also functional
       bind -r k select-pane -U
       bind -r j select-pane -D
-      bind -r h select-pane -L
-      bind -r l select-pane -R
+
+      # Switch windows (tabs) with h/l
+      bind -r h select-window -t :-1
+      bind -r l select-window -t :+1
 
       # Add other split options
       bind b split-window -h
       bind v split-window -v
 
+      # Enter copy mode with prefix + g
+      bind g copy-mode
+
       # Vi copy mode settings
-      unbind -T copy-mode-vi Enter
-      bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel "pbcopy"
+      bind-key -T copy-mode-vi v send-keys -X begin-selection
+      bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "pbcopy"
+      bind-key -T copy-mode-vi Escape send-keys -X clear-selection
       bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "pbcopy"
 
       # Refresh status line every 5 seconds
@@ -91,7 +97,7 @@
       set-window-option -g window-status-bell-style bg=colour167,fg=colour235
 
       set-option -g status-left "\
-      #[fg=colour7, bg=colour241]#{?client_prefix,#[bg=colour167],} ❐ #S \
+      #[fg=colour7, bg=colour241]#{?client_prefix,#[bg=colour167],}  #S \
       #[fg=colour241, bg=colour237]#{?client_prefix,#[fg=colour167],}#{?window_zoomed_flag, 🔍,}"
 
       set-option -g status-right "\
@@ -102,16 +108,16 @@
       #[fg=colour248, bg=colour239]"
 
       set-window-option -g window-status-current-format "\
-      #[fg=colour237, bg=colour214]\
+      #[fg=colour237, bg=colour214]\
       #[fg=colour239, bg=colour214] #I* \
       #[fg=colour239, bg=colour214, bold] #W \
-      #[fg=colour214, bg=colour237]"
+      #[fg=colour214, bg=colour237]"
 
       set-window-option -g window-status-format "\
-      #[fg=colour237,bg=colour239,noitalics]\
+      #[fg=colour237,bg=colour239,noitalics]\
       #[fg=colour223,bg=colour239] #I \
       #[fg=colour223, bg=colour239] #W \
-      #[fg=colour239, bg=colour237]"
+      #[fg=colour239, bg=colour237]"
     '';
   };
 }
