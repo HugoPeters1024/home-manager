@@ -44,8 +44,8 @@
       bind b split-window -h
       bind v split-window -v
 
-      # Enter copy mode with prefix + g
-      bind g copy-mode
+      # Enter copy mode with prefix + k
+      bind k copy-mode
 
       # Vi copy mode settings
       bind-key -T copy-mode-vi v send-keys -X begin-selection
@@ -74,11 +74,11 @@
       # Active window title colors
       set-window-option -g window-status-current-style bg=red,fg=colour237 # fg=bg1
 
-      # Set active pane border color
-      set-option -g pane-active-border-style fg=colour214
+      # Set active pane border color (brighter yellow for visibility)
+      set-option -g pane-active-border-style fg=colour220
 
-      # Set inactive pane border color
-      set-option -g pane-border-style fg=colour239
+      # Set inactive pane border color (dimmer)
+      set-option -g pane-border-style fg=colour236
 
       # Message info
       set-option -g message-style bg=colour239,fg=colour223 # bg=bg2, fg=fg1
@@ -98,7 +98,8 @@
 
       set-option -g status-left "\
       #[fg=colour7, bg=colour241]#{?client_prefix,#[bg=colour167],}  #S \
-      #[fg=colour241, bg=colour237]#{?client_prefix,#[fg=colour167],}#{?window_zoomed_flag, 🔍,}"
+      #[fg=colour241, bg=colour237]#{?client_prefix,#[fg=colour167],}#{?window_zoomed_flag, 🔍,}\
+      #{?pane_in_mode,#[fg=colour235]#[bg=colour214]#[bold] COPY ,}"
 
       set-option -g status-right "\
       #[fg=colour214, bg=colour237] \
