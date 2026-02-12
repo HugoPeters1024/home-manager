@@ -51,8 +51,7 @@ in
 
         -- This table will hold the configuration.
         local config = wezterm.config_builder()
-
-        -- This is where you actually apply your config choices
+        config.max_fps = 166
 
         -- For example, changing the color scheme:
         config.color_scheme = 'Gruvbox Dark (Gogh)'

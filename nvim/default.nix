@@ -143,6 +143,13 @@ in
         end,
       })
 
+      -- Register .str files as JavaScript for filetype detection and treesitter
+      vim.filetype.add({
+        extension = {
+          str = "javascript",
+        },
+      })
+
       vim.g.fugitive_gitlab_domains = {'https://git.groq.io/'}
 
       -- --------------
@@ -681,7 +688,7 @@ in
           -- Only start if a parser is available for this filetype
           local lang = vim.treesitter.language.get_lang(ft) or ft
           if pcall(vim.treesitter.language.add, lang) then
-            pcall(vim.treesitter.start, buf)
+            pcall(vim.treesitter.start, buf, lang)
           end
         end,
       })
@@ -767,20 +774,14 @@ in
 
       -- Setup keybindings for Strudel files (*.str extension)
       local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelFileSetup', { clear = true })
-      vim.api.nvim_create_autocmd('BufRead', {
+      vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
         group = strudel_marker_augroup,
-        pattern = '*',
-        desc = "Setup Strudel keybindings for .str files",
+        pattern = { '*.str', },
+        desc = "Setup Strudel keybindings and JavaScript filetype for .str/.agent files",
         callback = function(args)
           local bufnr = args.buf
           -- Ensure buffer is valid and still exists
           if not vim.api.nvim_buf_is_valid(bufnr) then
-            return
-          end
-
-          -- Check if the file actually has .str extension
-          local filename = vim.api.nvim_buf_get_name(bufnr)
-          if not filename:match("%.str$") then
             return
           end
 
