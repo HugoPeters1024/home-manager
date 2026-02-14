@@ -772,6 +772,99 @@ in
         browser_exec_path = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
       })
 
+      -- Strudel Sounds Telescope Picker
+      -- Queries available sounds from the active Strudel browser session
+      -- via Chrome DevTools Protocol and presents them in a Telescope picker.
+      local strudel_sounds_script = "${./strudel-sounds.js}"
+
+      local function strudel_pick_sound()
+        local pickers = require("telescope.pickers")
+        local finders = require("telescope.finders")
+        local conf = require("telescope.config").values
+        local actions = require("telescope.actions")
+        local action_state = require("telescope.actions.state")
+        local entry_display = require("telescope.pickers.entry_display")
+
+        -- Run the query script asynchronously
+        vim.fn.jobstart({ "node", strudel_sounds_script }, {
+          stdout_buffered = true,
+          on_stdout = function(_, data)
+            if not data or not data[1] or data[1] == "" then return end
+            local ok, sounds = pcall(vim.json.decode, data[1])
+            if not ok or not sounds then
+              vim.schedule(function()
+                vim.notify("Failed to parse Strudel sounds", vim.log.levels.ERROR)
+              end)
+              return
+            end
+
+            vim.schedule(function()
+              local displayer = entry_display.create({
+                separator = " ",
+                items = {
+                  { width = 30 },
+                  { width = 10 },
+                  { remaining = true },
+                },
+              })
+
+              local make_display = function(entry)
+                local count_str = entry.count > 0 and ("(" .. entry.count .. ")") or ""
+                return displayer({
+                  entry.name,
+                  { entry.sound_type, "Comment" },
+                  { count_str, "Number" },
+                })
+              end
+
+              pickers.new({}, {
+                prompt_title = "Strudel Sounds (" .. #sounds .. ")",
+                finder = finders.new_table({
+                  results = sounds,
+                  entry_maker = function(sound)
+                    return {
+                      value = sound,
+                      display = make_display,
+                      ordinal = sound.name .. " " .. sound.type .. " " .. (sound.tag or ""),
+                      name = sound.name,
+                      sound_type = sound.type,
+                      count = sound.count or 0,
+                    }
+                  end,
+                }),
+                sorter = conf.generic_sorter({}),
+                attach_mappings = function(prompt_bufnr, map)
+                  actions.select_default:replace(function()
+                    actions.close(prompt_bufnr)
+                    local selection = action_state.get_selected_entry()
+                    if selection then
+                      -- Insert the sound name at cursor position
+                      local cursor = vim.api.nvim_win_get_cursor(0)
+                      local line = vim.api.nvim_get_current_line()
+                      local col = cursor[2]
+                      local before = line:sub(1, col)
+                      local after = line:sub(col + 1)
+                      vim.api.nvim_set_current_line(before .. selection.name .. after)
+                      vim.api.nvim_win_set_cursor(0, { cursor[1], col + #selection.name })
+                    end
+                  end)
+                  return true
+                end,
+              }):find()
+            end)
+          end,
+          on_stderr = function(_, data)
+            if data and data[1] and data[1] ~= "" then
+              vim.schedule(function()
+                vim.notify("Strudel sounds: " .. table.concat(data, "\n"), vim.log.levels.WARN)
+              end)
+            end
+          end,
+        })
+      end
+
+      vim.api.nvim_create_user_command("StrudelSounds", strudel_pick_sound, {})
+
       -- Setup keybindings for Strudel files (*.str extension)
       local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelFileSetup', { clear = true })
       vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
@@ -793,6 +886,8 @@ in
           --vim.keymap.set("n", "<leader>sb", strudel.set_buffer, { desc = "Strudel set current buffer", buffer = bufnr })
           vim.keymap.set("n", "<C-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
           vim.keymap.set("n", "<S-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
+          vim.keymap.set("n", "fi", strudel_pick_sound, { desc = "Pick Strudel sound/instrument", buffer = bufnr })
+          vim.keymap.set("i", "<C-s>", strudel_pick_sound, { desc = "Pick Strudel sound/instrument", buffer = bufnr })
         end,
       })
     '';
