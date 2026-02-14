@@ -772,80 +772,56 @@ in
         browser_exec_path = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
       })
 
-      -- Strudel Sounds Telescope Picker
-      -- Queries available sounds from the active Strudel browser session
+      -- Strudel Telescope Pickers
+      -- Queries available sounds/functions from the active Strudel browser session
       -- via Chrome DevTools Protocol and presents them in a Telescope picker.
-      local strudel_sounds_script = "${./strudel-sounds.js}"
+      local strudel_query_script = "${./strudel-sounds.js}"
 
-      local function strudel_pick_sound()
+      -- Helper: insert text at cursor position
+      local function insert_at_cursor(text)
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        local line = vim.api.nvim_get_current_line()
+        local col = cursor[2]
+        local before = line:sub(1, col)
+        local after = line:sub(col + 1)
+        vim.api.nvim_set_current_line(before .. text .. after)
+        vim.api.nvim_win_set_cursor(0, { cursor[1], col + #text })
+      end
+
+      -- Helper: run the query script and open a picker with the results
+      local function strudel_picker(mode, title, entry_maker_fn)
         local pickers = require("telescope.pickers")
         local finders = require("telescope.finders")
         local conf = require("telescope.config").values
         local actions = require("telescope.actions")
         local action_state = require("telescope.actions.state")
-        local entry_display = require("telescope.pickers.entry_display")
 
-        -- Run the query script asynchronously
-        vim.fn.jobstart({ "node", strudel_sounds_script }, {
+        vim.fn.jobstart({ "node", strudel_query_script, mode }, {
           stdout_buffered = true,
           on_stdout = function(_, data)
             if not data or not data[1] or data[1] == "" then return end
-            local ok, sounds = pcall(vim.json.decode, data[1])
-            if not ok or not sounds then
+            local ok, items = pcall(vim.json.decode, data[1])
+            if not ok or not items then
               vim.schedule(function()
-                vim.notify("Failed to parse Strudel sounds", vim.log.levels.ERROR)
+                vim.notify("Failed to parse Strudel " .. mode, vim.log.levels.ERROR)
               end)
               return
             end
 
             vim.schedule(function()
-              local displayer = entry_display.create({
-                separator = " ",
-                items = {
-                  { width = 30 },
-                  { width = 10 },
-                  { remaining = true },
-                },
-              })
-
-              local make_display = function(entry)
-                local count_str = entry.count > 0 and ("(" .. entry.count .. ")") or ""
-                return displayer({
-                  entry.name,
-                  { entry.sound_type, "Comment" },
-                  { count_str, "Number" },
-                })
-              end
-
               pickers.new({}, {
-                prompt_title = "Strudel Sounds (" .. #sounds .. ")",
+                prompt_title = title .. " (" .. #items .. ")",
                 finder = finders.new_table({
-                  results = sounds,
-                  entry_maker = function(sound)
-                    return {
-                      value = sound,
-                      display = make_display,
-                      ordinal = sound.name .. " " .. sound.type .. " " .. (sound.tag or ""),
-                      name = sound.name,
-                      sound_type = sound.type,
-                      count = sound.count or 0,
-                    }
-                  end,
+                  results = items,
+                  entry_maker = entry_maker_fn,
                 }),
                 sorter = conf.generic_sorter({}),
-                attach_mappings = function(prompt_bufnr, map)
+                attach_mappings = function(prompt_bufnr)
                   actions.select_default:replace(function()
                     actions.close(prompt_bufnr)
                     local selection = action_state.get_selected_entry()
                     if selection then
-                      -- Insert the sound name at cursor position
-                      local cursor = vim.api.nvim_win_get_cursor(0)
-                      local line = vim.api.nvim_get_current_line()
-                      local col = cursor[2]
-                      local before = line:sub(1, col)
-                      local after = line:sub(col + 1)
-                      vim.api.nvim_set_current_line(before .. selection.name .. after)
-                      vim.api.nvim_win_set_cursor(0, { cursor[1], col + #selection.name })
+                      insert_at_cursor(selection.value.name)
                     end
                   end)
                   return true
@@ -856,14 +832,74 @@ in
           on_stderr = function(_, data)
             if data and data[1] and data[1] ~= "" then
               vim.schedule(function()
-                vim.notify("Strudel sounds: " .. table.concat(data, "\n"), vim.log.levels.WARN)
+                vim.notify("Strudel: " .. table.concat(data, "\n"), vim.log.levels.WARN)
               end)
             end
           end,
         })
       end
 
+      -- Sounds picker
+      local function strudel_pick_sound()
+        local entry_display = require("telescope.pickers.entry_display")
+        local displayer = entry_display.create({
+          separator = " ",
+          items = {
+            { width = 30 },
+            { width = 10 },
+            { remaining = true },
+          },
+        })
+
+        strudel_picker("sounds", "Strudel Sounds", function(sound)
+          local count_str = (sound.count or 0) > 0 and ("(" .. sound.count .. ")") or ""
+          return {
+            value = sound,
+            display = function()
+              return displayer({
+                sound.name,
+                { sound.type or "unknown", "Comment" },
+                { count_str, "Number" },
+              })
+            end,
+            ordinal = sound.name .. " " .. (sound.type or "") .. " " .. (sound.tag or ""),
+          }
+        end)
+      end
+
+      -- Functions picker
+      local function strudel_pick_function()
+        local entry_display = require("telescope.pickers.entry_display")
+        local displayer = entry_display.create({
+          separator = " ",
+          items = {
+            { width = 30 },
+            { remaining = true },
+          },
+        })
+
+        local kind_hl = {
+          control = "String",
+          method = "Function",
+          ["function"] = "Keyword",
+        }
+
+        strudel_picker("functions", "Strudel Functions", function(fn)
+          return {
+            value = fn,
+            display = function()
+              return displayer({
+                fn.name,
+                { fn.kind, kind_hl[fn.kind] or "Comment" },
+              })
+            end,
+            ordinal = fn.name .. " " .. fn.kind,
+          }
+        end)
+      end
+
       vim.api.nvim_create_user_command("StrudelSounds", strudel_pick_sound, {})
+      vim.api.nvim_create_user_command("StrudelFunctions", strudel_pick_function, {})
 
       -- Setup keybindings for Strudel files (*.str extension)
       local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelFileSetup', { clear = true })
@@ -887,7 +923,9 @@ in
           vim.keymap.set("n", "<C-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
           vim.keymap.set("n", "<S-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
           vim.keymap.set("n", "fi", strudel_pick_sound, { desc = "Pick Strudel sound/instrument", buffer = bufnr })
+          vim.keymap.set("n", "fp", strudel_pick_function, { desc = "Pick Strudel function", buffer = bufnr })
           vim.keymap.set("i", "<C-s>", strudel_pick_sound, { desc = "Pick Strudel sound/instrument", buffer = bufnr })
+          vim.keymap.set("i", "<C-f>", strudel_pick_function, { desc = "Pick Strudel function", buffer = bufnr })
         end,
       })
     '';
