@@ -111,7 +111,7 @@ in
       lualine-nvim
     ];
 
-    extraLuaConfig = /* lua */ ''
+    initLua = /* lua */ ''
       -- --------------
       -- Basic settings
       -- --------------
