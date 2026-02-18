@@ -708,14 +708,16 @@ in
       -- AI
       -- --------
       require("avante").setup({
-        provider = "claude",
+        provider = "nvidia",
         behaviour = {
-          auto_set_keymaps = false, -- Disable automatic keymaps to avoid conflicts
+          auto_set_keymaps = false,
         },
-        providers = {
-          claude = {
-            endpoint = "https://api.anthropic.com",
-            model = "claude-sonnet-4-5-20250929",
+        vendors = {
+          nvidia = {
+            __inherited_from = "openai",
+            endpoint = "https://inference-api.nvidia.com/v1",
+            model = "aws/anthropic/bedrock-claude-sonnet-4-6",
+            api_key_name = "NVIDIA_API_KEY",
             timeout = 30000,
             extra_request_body = {
               temperature = 0.75,
