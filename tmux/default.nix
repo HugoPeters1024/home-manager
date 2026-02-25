@@ -28,6 +28,8 @@
       vim-tmux-navigator
     ];
 
+    escapeTime = 10;
+
     extraConfig = ''
       # Pane base index
       set -g pane-base-index 0
