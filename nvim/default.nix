@@ -46,6 +46,7 @@ in
     pkgs.nil
     pkgs.typescript-language-server
     pkgs.nodejs # Required for strudel.nvim to work
+    pkgs.pyright
 
     pkgs.ripgrep
     pkgs.fd # Fast file finder for Telescope
