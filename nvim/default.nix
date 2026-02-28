@@ -97,7 +97,6 @@ in
       whitespace-nvim
       telescope-nvim
       telescope-fzf-native-nvim
-      emmet-vim
       gitlinker-nvim
       toggleterm-nvim
       strudel-nvim
@@ -713,7 +712,7 @@ in
         behaviour = {
           auto_set_keymaps = false,
         },
-        vendors = {
+        providers = {
           nvidia = {
             __inherited_from = "openai",
             endpoint = "https://inference-api.nvidia.com/v1",
