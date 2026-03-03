@@ -570,7 +570,17 @@ in
       require("neogit").setup({
         integrations = {
           diffview = true,
-        }
+        },
+        mappings = {
+          status = {
+            ["H"] = false,
+            ["L"] = false,
+          },
+          popup = {
+            ["H"] = false,
+            ["L"] = false,
+          },
+        },
       })
 
       vim.keymap.set('n', '<leader>gg', ":Neogit<CR>", bufopts)
