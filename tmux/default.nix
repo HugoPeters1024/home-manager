@@ -42,9 +42,10 @@
       bind -r h select-window -t :-1
       bind -r l select-window -t :+1
 
-      # Add other split options
-      bind b split-window -h
-      bind v split-window -v
+      # Add other split options — preserve working directory
+      bind b split-window -h -c "#{pane_current_path}"
+      bind v split-window -v -c "#{pane_current_path}"
+      bind c new-window -c "#{pane_current_path}"
 
       # Enter copy mode with prefix + k
       bind k copy-mode
