@@ -275,6 +275,146 @@ in
         vim.cmd('OverseerShell ' .. command)
       end, { nargs = '*', complete = 'shellcmd' })
 
+      -- -------------------
+      -- Bake target picker
+      -- -------------------
+      local function bake_pick_target()
+        local pickers = require("telescope.pickers")
+        local finders = require("telescope.finders")
+        local conf = require("telescope.config").values
+        local actions = require("telescope.actions")
+        local action_state = require("telescope.actions.state")
+        local entry_display = require("telescope.pickers.entry_display")
+
+        local monorepo_root = vim.fn.expand("~/lpu-monorepo")
+
+        local displayer = entry_display.create({
+          separator = " ",
+          items = {
+            { width = 2 },
+            { remaining = true },
+          },
+        })
+
+        local function parent_of(prefix)
+          if not prefix or prefix == "" then return nil end
+          local trimmed = prefix:gsub("[/:]$", "")
+          local last_sep = trimmed:match("^(.*[/:])")
+          return last_sep or ""
+        end
+
+        local function open_level(prefix)
+          prefix = prefix or ""
+          vim.fn.jobstart({ "bake", "complete", prefix }, {
+            cwd = monorepo_root,
+            stdout_buffered = true,
+            on_stdout = function(_, data)
+              if not data then return end
+              local items = {}
+              for _, line in ipairs(data) do
+                if line and line ~= "" then
+                  table.insert(items, line)
+                end
+              end
+              if #items == 0 then
+                vim.schedule(function()
+                  vim.notify("No bake completions for: " .. prefix, vim.log.levels.INFO)
+                end)
+                return
+              end
+
+              vim.schedule(function()
+                local label = prefix == "" and "/" or prefix
+                local has_parent = prefix ~= ""
+
+                pickers.new({}, {
+                  prompt_title = "Bake: " .. label .. "  (C-t test | C-b build | C-r run" .. (has_parent and " | C-h back)" or ")"),
+                  finder = finders.new_table({
+                    results = items,
+                    entry_maker = function(item)
+                      local suffix = item:sub(-1)
+                      local is_expandable = suffix == "/" or suffix == ":"
+                      local icon = suffix == "/" and "▸" or (suffix == ":" and "◆" or " ")
+                      local hl = suffix == "/" and "Directory" or (suffix == ":" and "Type" or "String")
+                      return {
+                        value = item,
+                        display = function(entry)
+                          return displayer({
+                            { icon, hl },
+                            entry.value,
+                          })
+                        end,
+                        ordinal = item,
+                        is_expandable = is_expandable,
+                      }
+                    end,
+                  }),
+                  sorter = conf.generic_sorter({}),
+                  attach_mappings = function(prompt_bufnr, map)
+                    local function run_bake_cmd(cmd)
+                      vim.fn.histadd("cmd", cmd)
+                      vim.cmd(cmd)
+                    end
+
+                    local function run_bake_action(action)
+                      local sel = action_state.get_selected_entry()
+                      if not sel then return end
+                      actions.close(prompt_bufnr)
+                      local target = sel.value:gsub("[/:]$", "")
+                      run_bake_cmd("Bake " .. action .. " " .. target)
+                    end
+
+                    actions.select_default:replace(function()
+                      local sel = action_state.get_selected_entry()
+                      if not sel then return end
+                      if sel.is_expandable then
+                        actions.close(prompt_bufnr)
+                        vim.schedule(function() open_level(sel.value) end)
+                      else
+                        actions.close(prompt_bufnr)
+                        local target = sel.value
+                        vim.ui.select({"test", "build", "run", "rebuild-on"}, {
+                          prompt = "Bake " .. target .. ": ",
+                        }, function(choice)
+                          if choice then
+                            run_bake_cmd("Bake " .. choice .. " " .. target)
+                          end
+                        end)
+                      end
+                    end)
+
+                    map({"i", "n"}, "<C-t>", function() run_bake_action("test") end)
+                    map({"i", "n"}, "<C-b>", function() run_bake_action("build") end)
+                    map({"i", "n"}, "<C-r>", function() run_bake_action("run") end)
+
+                    if has_parent then
+                      map({"i", "n"}, "<C-h>", function()
+                        actions.close(prompt_bufnr)
+                        vim.schedule(function() open_level(parent_of(prefix)) end)
+                      end)
+                    end
+
+                    return true
+                  end,
+                }):find()
+              end)
+            end,
+            on_stderr = function(_, data)
+              if data and data[1] and data[1] ~= "" then
+                vim.schedule(function()
+                  vim.notify("bake: " .. table.concat(data, "\n"), vim.log.levels.WARN)
+                end)
+              end
+            end,
+          })
+        end
+
+        open_level("")
+      end
+
+      vim.api.nvim_create_user_command("BakePick", bake_pick_target, {})
+      vim.keymap.set('n', 'fb', bake_pick_target, { desc = "Pick bake target" })
+
       -- --------------
       -- Simple plugins
       -- --------------
