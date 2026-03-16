@@ -9,12 +9,12 @@ let
 
   colossus-cli = python.pkgs.buildPythonPackage rec {
     pname = "colossus-cli";
-    version = "2.2.47";
+    version = "2.2.53";
     format = "setuptools";
 
     src = pkgs.fetchurl {
       url = "https://urm.nvidia.com/artifactory/api/pypi/sw-colossus-pypi/colossus-cli/${version}/colossus-cli-${version}.tar.gz";
-      sha256 = "d3fdf8cfd502a02344d69688a22d7a7b39a0e1dd2e6405d8188188b69dc35829";
+      sha256 = "c71caf8ed4e21d51e5a4d615b7691a5c6bb9ab56f427fdfaf6a3ef1740a9dc3e";
     };
 
     propagatedBuildInputs = with python.pkgs; [
