@@ -5,7 +5,7 @@
   ...
 }:
 let
-  python = pkgs.python311;
+  python = pkgs.python312;
 
   colossus-cli = python.pkgs.buildPythonPackage rec {
     pname = "colossus-cli";
