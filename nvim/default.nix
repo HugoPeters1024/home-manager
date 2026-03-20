@@ -602,17 +602,11 @@ in
       -- ---------------
       -- Persistent undo
       -- ---------------
-      if vim.fn.has('persistent_undo') == 1 then
-        vim.opt.undofile = true
-        local undo_dir = vim.fn.expand('~/.vim/undo')
-        vim.opt.undodir = undo_dir
-
-        -- Optional but recommended: Create the directory if it doesn't exist
-        -- vim.fn.isdirectory returns 0 for false, 1 for true
-        if vim.fn.isdirectory(undo_dir) == 0 then
-          vim.fn.mkdir(undo_dir, 'p')
-          vim.notify('Created undo directory: ' .. undo_dir, vim.log.levels.INFO)
-        end
+      vim.opt.undofile = true
+      local undo_dir = vim.fn.stdpath("state") .. "/undo"
+      vim.opt.undodir = undo_dir
+      if vim.fn.isdirectory(undo_dir) == 0 then
+        vim.fn.mkdir(undo_dir, 'p')
       end
 
       -- ---------
@@ -880,10 +874,14 @@ in
       -- ------------------
       local cmp = require 'cmp'
       cmp.setup {
+        snippet = {
+          expand = function(args)
+            vim.snippet.expand(args.body)
+          end,
+        },
         mapping = cmp.mapping.preset.insert({
-          ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- Up
-          ['<C-d>'] = cmp.mapping.scroll_docs(4), -- Down
-          -- C-b (back) C-f (forward) for snippet placeholder navigation.
+          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-d>'] = cmp.mapping.scroll_docs(4),
           ['<C-Space>'] = cmp.mapping.complete(),
           ['<CR>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
@@ -892,6 +890,8 @@ in
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
+            elseif vim.snippet.active({ direction = 1 }) then
+              vim.snippet.jump(1)
             else
               fallback()
             end
@@ -899,6 +899,8 @@ in
           ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
+            elseif vim.snippet.active({ direction = -1 }) then
+              vim.snippet.jump(-1)
             else
               fallback()
             end
