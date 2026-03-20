@@ -76,8 +76,6 @@ in
 
       # LSP
       nvim-treesitter.withAllGrammars
-      mason-nvim
-      mason-lspconfig-nvim
       nvim-lspconfig
       fidget-nvim
       trouble-nvim
@@ -754,9 +752,6 @@ in
       -- ----------------
       -- LSP
       -- ----------------
-      require('mason').setup({ PATH = "append" })
-      require("mason-lspconfig").setup()
-
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
       vim.lsp.config("rust_analyzer", {
         capabilities = capabilities,
