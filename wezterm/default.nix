@@ -62,7 +62,7 @@ in
           ${selectedFont.fallback}
         })
 
-        config.font_size = 14.0
+        config.font_size = 16.0
         config.line_height = 1.10
         config.font_rules = {
           {
