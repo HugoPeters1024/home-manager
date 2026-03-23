@@ -276,7 +276,8 @@ in
       -- -------------------
       -- Bake target picker
       -- -------------------
-      local function bake_pick_target()
+      local bake_open_level
+      do
         local pickers = require("telescope.pickers")
         local finders = require("telescope.finders")
         local conf = require("telescope.config").values
@@ -301,7 +302,7 @@ in
           return last_sep or ""
         end
 
-        local function open_level(prefix)
+        bake_open_level = function(prefix)
           prefix = prefix or ""
           vim.fn.jobstart({ "bake", "complete", prefix }, {
             cwd = monorepo_root,
@@ -367,7 +368,7 @@ in
                       if not sel then return end
                       if sel.is_expandable then
                         actions.close(prompt_bufnr)
-                        vim.schedule(function() open_level(sel.value) end)
+                        vim.schedule(function() bake_open_level(sel.value) end)
                       else
                         actions.close(prompt_bufnr)
                         local target = sel.value
@@ -388,7 +389,7 @@ in
                     if has_parent then
                       map({"i", "n"}, "<C-h>", function()
                         actions.close(prompt_bufnr)
-                        vim.schedule(function() open_level(parent_of(prefix)) end)
+                        vim.schedule(function() bake_open_level(parent_of(prefix)) end)
                       end)
                     end
 
@@ -406,12 +407,57 @@ in
             end,
           })
         end
+      end
 
-        open_level("")
+      local function bake_pick_target()
+        bake_open_level("")
       end
 
       vim.api.nvim_create_user_command("BakePick", bake_pick_target, {})
       vim.keymap.set('n', 'fb', bake_pick_target, { desc = "Pick bake target" })
+
+      vim.keymap.set('v', '<leader>b', function()
+        local vstart = vim.fn.getpos("v")
+        local vend = vim.fn.getpos(".")
+        local line = vim.fn.getline(vstart[2])
+        local col_start = math.min(vstart[3], vend[3])
+        local col_end = math.max(vstart[3], vend[3])
+        local selected = line:sub(col_start, col_end)
+
+        if selected == "" then
+          vim.notify("No text selected", vim.log.levels.WARN)
+          return
+        end
+
+        local bufpath = vim.api.nvim_buf_get_name(0)
+        if not bufpath:match("%.nix$") then
+          vim.notify("Not a .nix file", vim.log.levels.WARN)
+          return
+        end
+
+        local dir = vim.fn.fnamemodify(bufpath, ":h")
+        local repo_root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(dir) .. " rev-parse --show-toplevel")[1]
+        if not repo_root or repo_root == "" then
+          vim.notify("Not inside a git repo", vim.log.levels.WARN)
+          return
+        end
+        local rel = dir:gsub("^" .. vim.pesc(repo_root) .. "/?", "")
+
+        local target = "//" .. rel .. ":" .. selected
+        vim.notify("Bake target: " .. target, vim.log.levels.INFO)
+
+        vim.cmd("normal! " .. vim.api.nvim_replace_termcodes("<Esc>", true, false, true))
+
+        vim.ui.select({"test", "build", "run", "rebuild-on"}, {
+          prompt = "Bake " .. target .. ": ",
+        }, function(choice)
+          if choice then
+            local cmd = "Bake " .. choice .. " " .. target
+            vim.fn.histadd("cmd", cmd)
+            vim.cmd(cmd)
+          end
+        end)
+      end, { desc = "Bake target from visual selection in .nix file" })
 
       -- --------------
       -- Simple plugins
