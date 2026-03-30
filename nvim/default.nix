@@ -302,7 +302,7 @@ in
           return last_sep or ""
         end
 
-        bake_open_level = function(prefix)
+        bake_open_level = function(prefix, default_text)
           prefix = prefix or ""
           vim.fn.jobstart({ "bake", "complete", prefix }, {
             cwd = monorepo_root,
@@ -327,6 +327,7 @@ in
                 local has_parent = prefix ~= ""
 
                 pickers.new({}, {
+                  default_text = default_text or "",
                   prompt_title = "Bake: " .. label .. "  (C-t test | C-b build | C-r run" .. (has_parent and " | C-h back)" or ")"),
                   finder = finders.new_table({
                     results = items,
@@ -430,11 +431,6 @@ in
         end
 
         local bufpath = vim.api.nvim_buf_get_name(0)
-        if not bufpath:match("%.nix$") then
-          vim.notify("Not a .nix file", vim.log.levels.WARN)
-          return
-        end
-
         local dir = vim.fn.fnamemodify(bufpath, ":h")
         local repo_root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(dir) .. " rev-parse --show-toplevel")[1]
         if not repo_root or repo_root == "" then
@@ -442,22 +438,12 @@ in
           return
         end
         local rel = dir:gsub("^" .. vim.pesc(repo_root) .. "/?", "")
-
-        local target = "//" .. rel .. ":" .. selected
-        vim.notify("Bake target: " .. target, vim.log.levels.INFO)
+        local stem = "//" .. rel .. ":"
 
         vim.cmd("normal! " .. vim.api.nvim_replace_termcodes("<Esc>", true, false, true))
 
-        vim.ui.select({"test", "build", "run", "rebuild-on"}, {
-          prompt = "Bake " .. target .. ": ",
-        }, function(choice)
-          if choice then
-            local cmd = "Bake " .. choice .. " " .. target
-            vim.fn.histadd("cmd", cmd)
-            vim.cmd(cmd)
-          end
-        end)
-      end, { desc = "Bake target from visual selection in .nix file" })
+        bake_open_level(stem, selected)
+      end, { desc = "Open bake picker from visual selection" })
 
       -- --------------
       -- Simple plugins
