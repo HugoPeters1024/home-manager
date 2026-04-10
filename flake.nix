@@ -137,7 +137,7 @@
           ];
         };
 
-        "hugop_nvidia_com@devvm-hugop" = home-manager.lib.homeManagerConfiguration {
+        "hugop@devvm-hugop" = home-manager.lib.homeManagerConfiguration {
           pkgs = pkgs;
           modules = [
             ./nvim/default.nix
@@ -157,8 +157,8 @@
                 nix-direnv
                 cursor-cli
               ];
-              home.username = "hugop_nvidia_com";
-              home.homeDirectory = "/home/hugop_nvidia_com";
+              home.username = "hugop";
+              home.homeDirectory = "/home/hugop";
 
               # Add ~/.local/bin to PATH
               home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
