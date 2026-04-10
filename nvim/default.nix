@@ -356,12 +356,30 @@ in
                       vim.cmd(cmd)
                     end
 
+                    local function run_bake_action_with_target(action, target)
+                      if action == "rebuild-on" then
+                        vim.ui.input({
+                          prompt = "Machine for rebuild-on: ",
+                        }, function(machine)
+                          if not machine then return end
+                          machine = vim.trim(machine)
+                          if machine == "" then
+                            vim.notify("Machine name is required for rebuild-on", vim.log.levels.WARN)
+                            return
+                          end
+                          run_bake_cmd("Bake " .. action .. " " .. machine .. " " .. target)
+                        end)
+                        return
+                      end
+                      run_bake_cmd("Bake " .. action .. " " .. target)
+                    end
+
                     local function run_bake_action(action)
                       local sel = action_state.get_selected_entry()
                       if not sel then return end
                       actions.close(prompt_bufnr)
                       local target = sel.value:gsub("[/:]$", "")
-                      run_bake_cmd("Bake " .. action .. " " .. target)
+                      run_bake_action_with_target(action, target)
                     end
 
                     actions.select_default:replace(function()
@@ -377,7 +395,7 @@ in
                           prompt = "Bake " .. target .. ": ",
                         }, function(choice)
                           if choice then
-                            run_bake_cmd("Bake " .. choice .. " " .. target)
+                            run_bake_action_with_target(choice, target)
                           end
                         end)
                       end
@@ -444,6 +462,27 @@ in
 
         bake_open_level(stem, selected)
       end, { desc = "Open bake picker from visual selection" })
+
+      vim.keymap.set('v', 'L', function()
+        local vstart = vim.fn.getpos("v")
+        local vend = vim.fn.getpos(".")
+        if vstart[2] ~= vend[2] then
+          vim.notify("Selection must be a single-line task id", vim.log.levels.WARN)
+          return
+        end
+        local line = vim.fn.getline(vstart[2])
+        local col_start = math.min(vstart[3], vend[3])
+        local col_end = math.max(vstart[3], vend[3])
+        local selected = line:sub(col_start, col_end)
+
+        if not selected:match("^t%d+$") then
+          vim.notify("Selection must match task id pattern t<digits>", vim.log.levels.WARN)
+          return
+        end
+
+        vim.cmd("normal! " .. vim.api.nvim_replace_termcodes("<Esc>", true, false, true))
+        vim.cmd("Bake log -f " .. selected)
+      end, { desc = "Follow bake log for selected task id" })
 
       -- --------------
       -- Simple plugins
