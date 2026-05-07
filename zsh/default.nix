@@ -39,6 +39,11 @@ in
       custom = "$HOME/.oh-my-custom";
     };
     envExtra = ''
+      # Launch nix deamon (needed after macos update)
+      if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+      fi
+
       # use whatever installed by rustup
       export PATH="${config.home.homeDirectory}/.cargo/bin:$PATH"
 
