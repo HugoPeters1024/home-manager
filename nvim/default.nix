@@ -1,6 +1,11 @@
 { pkgs, lib, ...}:
 
 let
+  # Hydra (video synth) function catalog, read & validated at Nix eval time.
+  # Fails the build immediately if the file is missing or contains invalid JSON.
+  hydraFunctionsJson = builtins.toJSON
+    (builtins.fromJSON (builtins.readFile ./hydra-functions.json));
+
   strudel-nvim =
     {
       plugin = pkgs.buildNpmPackage {
@@ -1295,6 +1300,75 @@ in
       vim.api.nvim_create_user_command("StrudelSounds", strudel_pick_sound, {})
       vim.api.nvim_create_user_command("StrudelFunctions", strudel_pick_function, {})
 
+      -- -----
+      -- Hydra (video synth) Telescope Picker
+      -- -----
+      -- Static list of Hydra functions, categorized as input / connector / output.
+      -- The contents of ./hydra-functions.json are read & validated at Nix
+      -- eval time and baked directly into this Lua chunk.
+      local hydra_functions = vim.json.decode([==[${hydraFunctionsJson}]==])
+
+      local function hydra_pick_function()
+        if #hydra_functions == 0 then return end
+
+        local pickers = require("telescope.pickers")
+        local finders = require("telescope.finders")
+        local conf = require("telescope.config").values
+        local actions = require("telescope.actions")
+        local action_state = require("telescope.actions.state")
+        local entry_display = require("telescope.pickers.entry_display")
+
+        local displayer = entry_display.create({
+          separator = " ",
+          items = {
+            { width = 18 },  -- name
+            { width = 10 },  -- category (input/connector/output)
+            { width = 10 },  -- subcategory (source, geometry, ...)
+            { remaining = true }, -- signature / doc
+          },
+        })
+
+        local category_hl = {
+          input = "DiagnosticOk",
+          connector = "DiagnosticHint",
+          output = "DiagnosticWarn",
+        }
+
+        pickers.new({}, {
+          prompt_title = "Hydra Functions (" .. #hydra_functions .. ")",
+          finder = finders.new_table({
+            results = hydra_functions,
+            entry_maker = function(item)
+              return {
+                value = item,
+                display = function()
+                  return displayer({
+                    item.name,
+                    { item.category or "", category_hl[item.category] or "Comment" },
+                    { item.subcategory or "", "Comment" },
+                    { item.signature or item.doc or "", "Comment" },
+                  })
+                end,
+                ordinal = (item.name or "") .. " " .. (item.category or "") .. " " .. (item.subcategory or ""),
+              }
+            end,
+          }),
+          sorter = conf.generic_sorter({}),
+          attach_mappings = function(prompt_bufnr, _)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selection = action_state.get_selected_entry()
+              if selection then
+                insert_at_cursor(selection.value.name)
+              end
+            end)
+            return true
+          end,
+        }):find()
+      end
+
+      vim.api.nvim_create_user_command("HydraFunctions", hydra_pick_function, {})
+
       -- Setup keybindings for Strudel files (*.str extension)
       local strudel_marker_augroup = vim.api.nvim_create_augroup('StrudelFileSetup', { clear = true })
       vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
@@ -1318,6 +1392,7 @@ in
           vim.keymap.set("n", "<S-CR>", strudel.execute, { desc = "Strudel set current buffer and update", buffer = bufnr })
           vim.keymap.set("n", "fi", strudel_pick_sound, { desc = "Pick Strudel sound/instrument", buffer = bufnr })
           vim.keymap.set("n", "fp", strudel_pick_function, { desc = "Pick Strudel function", buffer = bufnr })
+          vim.keymap.set("n", "fv", hydra_pick_function, { desc = "Pick Hydra (video synth) function", buffer = bufnr })
           vim.keymap.set("i", "<C-s>", strudel_pick_sound, { desc = "Pick Strudel sound/instrument", buffer = bufnr })
           vim.keymap.set("i", "<C-f>", strudel_pick_function, { desc = "Pick Strudel function", buffer = bufnr })
         end,
