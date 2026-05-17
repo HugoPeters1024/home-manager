@@ -171,6 +171,30 @@ in
           }
         end)
 
+        -- Toggle window transparency. When the active pane is running nvim,
+        -- also trigger :TransparentToggle so cell backgrounds become NONE
+        -- and you can see straight through to whatever is behind the window
+        -- (e.g. a Strudel/Hydra browser tab).
+        wezterm.on("toggle-transparency", function(window, pane)
+          local overrides = window:get_config_overrides() or {}
+          local opaque = (overrides.window_background_opacity or 1.0) >= 1.0
+
+          if opaque then
+            overrides.window_background_opacity = 0.0
+            overrides.text_background_opacity = 0.0
+          else
+            overrides.window_background_opacity = 1.0
+            overrides.text_background_opacity = 1.0
+          end
+          window:set_config_overrides(overrides)
+
+          local proc = pane:get_foreground_process_name() or ""
+          if proc:match("n?vim$") then
+            -- \x1c\x0e == <C-\><C-n>: robustly leave any mode (insert/visual/cmdline/term)
+            pane:send_text("\x1c\x0e:TransparentToggle\r")
+          end
+        end)
+
         -- Cursor configuration
         config.default_cursor_style = "SteadyBlock"
         config.cursor_thickness = 0.8
@@ -271,6 +295,12 @@ in
             key = "q",
             mods = "CMD|SHIFT",
             action = wezterm.action { CloseCurrentPane = { confirm = false } },
+          },
+          -- Cmd+Shift+T to toggle window transparency (and nvim's :TransparentToggle)
+          {
+            key = "t",
+            mods = "CMD|SHIFT",
+            action = wezterm.action.EmitEvent("toggle-transparency"),
           },
         }
 
