@@ -761,13 +761,21 @@ in
           fzf = { ['esc'] = 'abort' },
         },
       })
+      local function in_git_repo()
+        local cwd = vim.fn.expand('%:p:h')
+        if cwd == ''' then cwd = vim.fn.getcwd() end
+        vim.fn.system({ 'git', '-C', cwd, 'rev-parse', '--is-inside-work-tree' })
+        return vim.v.shell_error == 0
+      end
       vim.keymap.set('n', 'ff', function()
-        if pcall(fzf.git_files) then return end
-        fzf.files()
+        if in_git_repo() then fzf.git_files() else fzf.files() end
       end, { desc = "Find files (git-aware)" })
       vim.keymap.set('n', 'fF', function()
-        if pcall(fzf.git_files, { git_opts = '--cached --others --exclude-standard' }) then return end
-        fzf.files()
+        if in_git_repo() then
+          fzf.git_files({ git_opts = '--cached --others --exclude-standard' })
+        else
+          fzf.files()
+        end
       end, { desc = "Find files (including untracked)" })
 	    vim.keymap.set('n', 'fg', fzf.live_grep, {})
       vim.keymap.set('n', 'fe', function() telescope.diagnostics({ initial_mode = 'normal'}) end, {})
