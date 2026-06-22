@@ -334,7 +334,7 @@ in
 
                 pickers.new({}, {
                   default_text = default_text or "",
-                  prompt_title = "Bake: " .. label .. "  (C-t test | C-b build | C-r run" .. (has_parent and " | C-h back)" or ")"),
+                  prompt_title = "Bake: " .. label .. "  (C-t test | C-b build | C-r run | C-y yank" .. (has_parent and " | C-h back)" or ")"),
                   finder = finders.new_table({
                     results = items,
                     entry_maker = function(item)
@@ -363,6 +363,26 @@ in
                     end
 
                     local function run_bake_action_with_target(action, target)
+                      if action == "yank" then
+                        vim.fn.setreg('"', target)
+                        vim.fn.setreg('+', target)
+                        vim.notify("Yanked: " .. target, vim.log.levels.INFO)
+                        return
+                      end
+
+                      if action == "bench" then
+                        vim.ui.input({
+                          prompt = "Instances for bench: ",
+                          default = "20",
+                        }, function(instances)
+                          if not instances then return end
+                          instances = vim.trim(instances)
+                          if instances == "" then instances = "20" end
+                          run_bake_cmd("BakeBench " .. instances .. " " .. target)
+                        end)
+                        return
+                      end
+
                       if action == "rebuild-on" then
                         vim.ui.input({
                           prompt = "Machine for rebuild-on: ",
@@ -373,7 +393,16 @@ in
                             vim.notify("Machine name is required for rebuild-on", vim.log.levels.WARN)
                             return
                           end
-                          run_bake_cmd("Bake " .. action .. " " .. machine .. " " .. target)
+                          vim.ui.select({"no", "yes"}, {
+                            prompt = "Add --force flag? ",
+                          }, function(choice)
+                            if not choice then return end
+                            local cmd = "Bake " .. action .. " " .. machine .. " " .. target
+                            if choice == "yes" then
+                              cmd = cmd .. " --force"
+                            end
+                            run_bake_cmd(cmd)
+                          end)
                         end)
                         return
                       end
@@ -397,7 +426,7 @@ in
                       else
                         actions.close(prompt_bufnr)
                         local target = sel.value
-                        vim.ui.select({"test", "build", "run", "rebuild-on"}, {
+                        vim.ui.select({"test", "build", "run", "rebuild-on", "bench", "yank"}, {
                           prompt = "Bake " .. target .. ": ",
                         }, function(choice)
                           if choice then
@@ -410,6 +439,7 @@ in
                     map({"i", "n"}, "<C-t>", function() run_bake_action("test") end)
                     map({"i", "n"}, "<C-b>", function() run_bake_action("build") end)
                     map({"i", "n"}, "<C-r>", function() run_bake_action("run") end)
+                    map({"i", "n"}, "<C-y>", function() run_bake_action("yank") end)
 
                     if has_parent then
                       map({"i", "n"}, "<C-h>", function()
