@@ -45,6 +45,33 @@ let
       };
       type = "nvim-lua";
     };
+
+  # cornelis (agda-mode for neovim). We pin git master rather than nixpkgs'
+  # released version (Hackage 0.2.0.1), which predates the Agda 2.8.0 RPC fixes
+  # and breaks interactive commands like make-case / give / solve.
+  cornelisSrc = pkgs.fetchFromGitHub {
+    owner = "agda";
+    repo = "cornelis";
+    rev = "f6db4a8e0993276557cc59b8e720d04e73138ded";
+    sha256 = "sha256-XG7F0ALVWU+8XHfYEj0R8SF+vjwCyy65oX4UcVxRlPc=";
+  };
+
+  # Build the binary under the default (cached) GHC so the heavy Agda library
+  # stays a binary-cache hit and only cornelis itself compiles. Using cornelis'
+  # own flake would pin an alternate GHC and force an Agda rebuild from source.
+  cornelis-bin = pkgs.haskell.lib.compose.justStaticExecutables
+    (pkgs.haskellPackages.callCabal2nix "cornelis" cornelisSrc { });
+
+  # The matching neovim plugin from the same checkout.
+  cornelis-vim = pkgs.vimUtils.buildVimPlugin {
+    pname = "cornelis";
+    version = "0-unstable-2026-06-02";
+    src = cornelisSrc;
+    dependencies = [
+      pkgs.vimPlugins.nvim-hs-vim
+      pkgs.vimPlugins.vim-textobj-user
+    ];
+  };
 in
 {
   home.packages = [
@@ -52,6 +79,10 @@ in
     pkgs.typescript-language-server
     pkgs.nodejs # Required for strudel.nvim to work
     pkgs.pyright
+
+    # Agda interactive backend for cornelis.nvim. The `agda` executable itself
+    # is expected on PATH (e.g. provided per-project via a nix devShell + direnv).
+    cornelis-bin
 
     pkgs.ripgrep
     pkgs.fd # Fast file finder for Telescope
@@ -84,6 +115,11 @@ in
       nvim-lspconfig
       fidget-nvim
       trouble-nvim
+
+      # Agda (agda-mode for neovim). Uses the `cornelis-bin` from home.packages.
+      cornelis-vim
+      nvim-hs-vim
+      vim-textobj-user
 
       # Git integration
       vim-fugitive
@@ -149,9 +185,13 @@ in
       })
 
       -- Register .str files as JavaScript for filetype detection and treesitter
+      -- Neovim ships no built-in agda detection, so .agda/.lagda need it too
+      -- (without this, filetype is empty and treesitter highlighting never starts).
       vim.filetype.add({
         extension = {
           str = "javascript",
+          agda = "agda",
+          lagda = "agda",
         },
       })
 
@@ -962,6 +1002,63 @@ in
             pcall(vim.treesitter.start, buf, lang)
           end
         end,
+      })
+
+      -- ----------------
+      -- Agda (Cornelis)
+      -- ----------------
+      -- cornelis is "agda-mode for neovim": load/typecheck, list goals, inspect
+      -- goal types, refine, case-split, give, and proof search, all driven by the
+      -- agda process (which also provides the real, semantic highlighting once a
+      -- file is loaded). Basic highlighting before load comes from treesitter.
+      --
+      -- Use the cornelis binary from PATH (installed via home.packages) rather
+      -- than building it with stack -- required since /nix/store is read-only.
+      vim.g.cornelis_use_global_binary = 1
+      -- Goals / type-context info window opens in a split at the bottom.
+      vim.g.cornelis_split_location = 'bottom'
+
+      -- Unicode input works out of the box in insert mode via the `\` prefix
+      -- (same as agda-mode / the VSCode extension): e.g. \bN -> ℕ, \to -> →,
+      -- \all -> ∀, \== -> ≡, \<= -> ≤ . See `cornelis/agda-input.vim`.
+
+      local agda_group = vim.api.nvim_create_augroup('AgdaCornelis', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = agda_group,
+        pattern = 'agda',
+        callback = function(args)
+          local function map(modes, lhs, rhs, desc)
+            vim.keymap.set(modes, lhs, rhs, { buffer = args.buf, silent = true, desc = desc })
+          end
+          -- Ctrl-based bindings, all buffer-local to .agda. Using <cmd>...<CR>
+          -- means they also fire in insert mode without dropping out of insert,
+          -- so you can drive agda while still editing inside a hole.
+          --
+          -- Note: in .agda buffers these shadow some insert-mode defaults:
+          --   <C-r> (insert register), <C-a> (repeat last insert),
+          --   <C-Space> (cmp complete), <C-t> (indent line).
+          local ni = { 'n', 'i' }
+          map(ni,  '<C-l>',     '<cmd>CornelisLoad<CR>',        'Agda: load / typecheck')   -- C-c C-l
+          map(ni,  '<C-Space>', '<cmd>CornelisGive<CR>',        'Agda: give (fill hole)')   -- C-c C-SPC
+          map(ni,  '<C-r>',     '<cmd>CornelisRefine<CR>',      'Agda: refine goal')        -- C-c C-r
+          map(ni,  '<C-a>',     '<cmd>CornelisAuto<CR>',        'Agda: auto proof search')  -- C-c C-a
+          map(ni,  '<C-t>',     '<cmd>CornelisTypeContext<CR>', 'Agda: goal type & context')-- C-c C-,
+          map(ni,  '<C-s>',     '<cmd>CornelisSolve<CR>',       'Agda: solve constraints')  -- C-c C-s
+          -- Case split: normal mode only, so <C-c> keeps its "leave insert" role.
+          map('n', '<C-c>',     '<cmd>CornelisMakeCase<CR>',    'Agda: case split')         -- C-c C-c
+          -- Inspection / navigation (normal mode).
+          map('n', '<C-g>',     '<cmd>CornelisGoals<CR>',          'Agda: list all goals')  -- C-c C-?
+          map('n', 'gd',        '<cmd>CornelisGoToDefinition<CR>', 'Agda: go to definition')
+          map('n', ']g',        '<cmd>CornelisNextGoal<CR>',       'Agda: next goal')       -- C-c C-f
+          map('n', '[g',        '<cmd>CornelisPrevGoal<CR>',       'Agda: previous goal')   -- C-c C-b
+        end,
+      })
+
+      -- Tidy up cornelis' info windows when closing an Agda buffer.
+      vim.api.nvim_create_autocmd('QuitPre', {
+        group = agda_group,
+        pattern = '*.agda',
+        command = 'silent! CornelisCloseInfoWindows',
       })
 
       vim.keymap.set('n', 'qf', vim.lsp.buf.code_action, bufopts)
