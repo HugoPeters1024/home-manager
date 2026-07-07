@@ -917,8 +917,17 @@ in
 
       vim.lsp.config("clangd", {
         capabilities = capabilities,
-        cmd = { "clangd", "-j=8", "--malloc-trim", "--background-index", "--pch-storage=memory" },
+        cmd = {
+          "clangd",
+          "-j=8",
+          "--malloc-trim",
+          "--background-index",
+          "--pch-storage=memory",
+          "--query-driver=/nix/store/**/bin/g++",
+        },
       })
+
+      vim.lsp.enable("clangd")
       vim.lsp.enable("clangd")
 
 
